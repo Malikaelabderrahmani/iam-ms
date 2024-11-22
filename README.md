@@ -7,7 +7,7 @@ IAM-MS is a microservice designed to handle authentication, authorization, and u
 1. [Introduction](#introduction)
 2. [Features](#features)
 3. [Installation](#installation)
-4. 
+
 ## Introduction
 
 IAM-MS (Identity and Access Management Microservice) is designed to manage user authentication and authorization in a secure and efficient manner. This microservice is capable of handling role-based access control (RBAC), user profile management, and permissions management for different user roles (students, teachers, parents, admins).
