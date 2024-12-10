@@ -1,4 +1,4 @@
-package com.example.demo.dto.login;
+package pfe.mandomati.iamms.dto.login;
 
 import lombok.Builder;
 import lombok.Data;

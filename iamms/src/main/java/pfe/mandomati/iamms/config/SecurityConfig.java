@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package pfe.mandomati.iamms.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
