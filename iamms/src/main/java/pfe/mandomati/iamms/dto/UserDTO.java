@@ -16,7 +16,7 @@ public class UserDTO {
 
     private String phone;
 
-    private String profile;
+    private String role;
 
     private String password;
 }
