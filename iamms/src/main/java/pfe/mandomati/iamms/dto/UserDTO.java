@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package pfe.mandomati.iamms.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +13,6 @@ public class UserDTO {
     private String firstname;
 
     private String email;
-
-    private String phone;
 
     private String role;
 

@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package pfe.mandomati.iamms.service;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.dto.login.AccessTokenResponseDTO;
+import pfe.mandomati.iamms.dto.UserDTO;
+import pfe.mandomati.iamms.dto.login.AccessTokenResponseDTO;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 

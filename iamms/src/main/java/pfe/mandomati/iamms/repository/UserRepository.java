@@ -1,7 +1,7 @@
-package com.example.demo.repository;
+package pfe.mandomati.iamms.repository;
 
 
-import com.example.demo.model.User;
+import pfe.mandomati.iamms.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

@@ -1,11 +1,11 @@
-package com.example.demo.service.impl;
+package pfe.mandomati.iamms.service.impl;
 
-import com.example.demo.dto.UserDTO;
-import com.example.demo.dto.login.AccessTokenResponseDTO;
-import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.service.AuthService;
-import com.example.demo.service.KeycloakService;
+import pfe.mandomati.iamms.dto.UserDTO;
+import pfe.mandomati.iamms.dto.login.AccessTokenResponseDTO;
+import pfe.mandomati.iamms.model.User;
+import pfe.mandomati.iamms.repository.UserRepository;
+import pfe.mandomati.iamms.service.AuthService;
+import pfe.mandomati.iamms.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
