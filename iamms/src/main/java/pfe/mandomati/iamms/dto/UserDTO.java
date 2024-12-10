@@ -1,5 +1,8 @@
 package pfe.mandomati.iamms.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -17,4 +20,15 @@ public class UserDTO {
     private String role;
 
     private String password;
+
+    private boolean status = true;
+
+    private String address;
+
+    private LocalDate birthDate;
+
+    private String city;
+
+    private LocalDateTime createdAt;
+
 }
