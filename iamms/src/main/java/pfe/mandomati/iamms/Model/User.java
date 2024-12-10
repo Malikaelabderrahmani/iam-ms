@@ -15,7 +15,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pfe.mandomati.iamms.Model.Role;
 
 @Entity
 @Table(name = "users")
@@ -54,7 +53,7 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
+    //@ManyToOne(fetch = FetchType.EAGER)
+    //@JoinColumn(name = "role_id", nullable = false)
     private String role;
 }

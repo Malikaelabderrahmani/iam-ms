@@ -32,7 +32,7 @@ import pfe.mandomati.iamms.Service.KeycloakService;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class KeycloakServiceImpl {
+public class KeycloakServiceImpl implements KeycloakService {
 
     private final UserRepository userRepository;
     private final KeycloakConfig keycloakConfig;

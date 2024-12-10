@@ -16,7 +16,7 @@ import pfe.mandomati.iamms.Service.KeycloakService;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService {
 
     private final KeycloakService keycloakService;
     private final UserRepository userRepository;

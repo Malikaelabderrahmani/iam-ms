@@ -1,0 +1,39 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: ""
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      enable_lazy_load_no_trans: true
+      event:
+        merge:
+          entity_copy_observer: allow
+  application:
+    name: demo-service
+
+
+keycloak:
+  realm: SchoolManagement
+  auth-server-url: http://localhost:8080
+  client-id: client
+  credentials:
+    secret: OszOqg3VDMsmGKl8Gj4PIN0EzytNBD5Y
+  principal-attribute: preferred_username
+
+client-jwk-set-uri: "http://localhost:8080/realms/SchoolManagement/protocol/openid-connect/certs"
+jwt:
+  auth:
+    converter:
+      resource-id: client
+      principal-attribute: preferred_username
+
