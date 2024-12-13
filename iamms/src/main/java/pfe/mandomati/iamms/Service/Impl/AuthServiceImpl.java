@@ -12,6 +12,7 @@ import pfe.mandomati.iamms.Dto.UserDto;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Service.AuthService;
 import pfe.mandomati.iamms.Service.KeycloakService;
+import pfe.mandomati.iamms.Model.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -47,11 +48,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void saveUserLocally(UserDto userDTO) {
-        String defaultRole = "ADMIN";
+        //String defaultRole = "ADMIN";
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
-        user.setRole(defaultRole);
+        user.setRole(userDTO.getRole());
         userRepository.save(user);
     }
 }

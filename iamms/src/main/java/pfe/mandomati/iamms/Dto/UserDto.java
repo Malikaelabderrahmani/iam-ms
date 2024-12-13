@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Data;
+import pfe.mandomati.iamms.Model.Role;
 
 @Data
 @Builder
@@ -18,7 +19,7 @@ public class UserDto {
 
     private String email;
 
-    private String role;
+    private Role role;
 
     private String password;
 

@@ -27,6 +27,7 @@ import pfe.mandomati.iamms.Dto.Login.AccessTokenResponseDto;
 import pfe.mandomati.iamms.Dto.UserDto;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Service.KeycloakService;
+import pfe.mandomati.iamms.Model.Role;
 
 
 @Service
@@ -37,7 +38,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     private final UserRepository userRepository;
     private final KeycloakConfig keycloakConfig;
     private final LocalValidatorFactoryBean defaultValidator;
-    private final String defaultRole = "ADMIN";
+    //private final String defaultRole = "ADMIN";
 
     @Override
     public ResponseEntity<AccessTokenResponseDto> login(String username, String password) {
@@ -83,7 +84,7 @@ public class KeycloakServiceImpl implements KeycloakService {
             }
 
             String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-            assignRoleToUser(userId, defaultRole);
+            assignRoleToUser(userId, userDTO.getRole().getName());
             //saveUserLocally(userDTO, defaultRole);
 
             return ResponseEntity.ok("User registered successfully");
@@ -151,11 +152,11 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
 
-    private void saveUserLocally(UserDto userDTO, String Role) {
+    private void saveUserLocally(UserDto userDTO, Role role) {
         User localUser = new User();
         localUser.setUsername(userDTO.getUsername());
         localUser.setEmail(userDTO.getEmail());
-        localUser.setRole(Role);
+        localUser.setRole(role);
         userRepository.save(localUser);
     }
 
