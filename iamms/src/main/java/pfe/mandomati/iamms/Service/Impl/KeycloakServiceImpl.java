@@ -159,6 +159,4 @@ public class KeycloakServiceImpl implements KeycloakService {
         localUser.setRole(role);
         userRepository.save(localUser);
     }
-
-
 }
