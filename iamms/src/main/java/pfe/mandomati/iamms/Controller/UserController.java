@@ -13,7 +13,7 @@ import pfe.mandomati.iamms.Service.UserService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("auth/user")
+@RequestMapping("auth/users")
 public class UserController {
     
     @Autowired
