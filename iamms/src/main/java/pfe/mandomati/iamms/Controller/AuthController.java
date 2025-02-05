@@ -20,11 +20,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @GetMapping("/hello")
-    public String hello()
-    {
-	    return "Hello world!";
-    }
     @GetMapping("/login")
     public ResponseEntity<AccessTokenResponseDto> login(@RequestParam String username, @RequestParam String password) {
         return authService.login(username, password);
