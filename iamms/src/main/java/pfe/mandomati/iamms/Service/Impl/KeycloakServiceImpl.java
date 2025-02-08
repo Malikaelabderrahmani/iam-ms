@@ -27,6 +27,7 @@ import pfe.mandomati.iamms.Dto.UserDto;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Service.KeycloakService;
 import pfe.mandomati.iamms.Model.Role;
+import org.keycloak.admin.client.resource.UserResource;
 
 
 @Service
@@ -160,21 +161,21 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public void updateUserInKeycloak(Long id, User user) {
+    public void updateUserInKeycloak(Long id, UserDto userDto) {
         Keycloak keycloak = keycloakConfig.getInstance();
-        UserResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
+        UsersResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
         UserRepresentation userRepresentation = usersResource.get(id.toString()).toRepresentation();
-        userRepresentation.setEmail(user.getEmail());
-        userRepresentation.setUsername(user.getEmail());
-        userRepresentation.setFirstName(user.getFirstName());
-        userRepresentation.setLastName(user.getLastName());
+        userRepresentation.setEmail(userDto.getEmail());
+        userRepresentation.setUsername(userDto.getUsername());
+        userRepresentation.setFirstName(userDto.getFirstname());
+        userRepresentation.setLastName(userDto.getLastname());
         usersResource.get(id.toString()).update(userRepresentation);
     }
 
     @Override
     public void deleteUserFromKeycloak(Long id) {
         Keycloak keycloak = keycloakConfig.getInstance();
-        UserResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
+        UsersResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
         usersResource.delete(id.toString());
     }
 }

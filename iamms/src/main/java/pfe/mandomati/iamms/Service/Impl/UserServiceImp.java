@@ -13,6 +13,7 @@ import pfe.mandomati.iamms.Service.KeycloakService;
 import pfe.mandomati.iamms.Dto.UserDto;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImp implements UserService {
@@ -39,8 +40,8 @@ public class UserServiceImp implements UserService {
         // Update user in Keycloak
         keycloakService.updateUserInKeycloak(id, userDto);
         // Update user in local database
-        existingUser.setName(userDto.getFirstName());
-        existingUser.setLastName(userDto.getLastName());
+        existingUser.setFirstName(userDto.getFirstname());
+        existingUser.setLastName(userDto.getLastname());
         existingUser.setUsername(userDto.getEmail());
         existingUser.setEmail(userDto.getEmail());
         return userRepository.save(existingUser);
