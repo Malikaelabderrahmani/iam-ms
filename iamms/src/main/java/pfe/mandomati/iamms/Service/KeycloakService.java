@@ -13,6 +13,6 @@ public interface KeycloakService{
     ResponseEntity<AccessTokenResponseDto> login(String username, String password);
     ResponseEntity<String> registerUser(UserDto userDTO);
     List<UserRepresentation> getUser(String userName);
-    void updateUserInKeycloak(Long id, User user);
+    void updateUserInKeycloak(Long id, UserDto userDto);
     void deleteUserFromKeycloak(Long id);
 }
