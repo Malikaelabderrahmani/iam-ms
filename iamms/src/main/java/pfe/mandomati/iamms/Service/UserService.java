@@ -10,4 +10,8 @@ import pfe.mandomati.iamms.Model.User;
 public interface UserService {
     
     List<User> getAllUsers();
+    User getUserById(Long id);
+    User editUser(UserDto userDto);
+    void deleteUser(Long id);
+    
 }

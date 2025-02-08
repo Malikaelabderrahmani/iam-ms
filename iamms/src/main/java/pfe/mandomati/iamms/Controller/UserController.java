@@ -13,15 +13,25 @@ import pfe.mandomati.iamms.Service.UserService;
 
 @RestController
 @RequiredArgsConstructor
+//@RequestPreAuthorize("haseRole('ROLE_ADMIN', 'ROLE_ROOT', 'ROLE_RH')")
 @RequestMapping("auth/user")
 public class UserController {
     
     @Autowired
     private final UserService userService;
 
-    @GetMapping("all")
+    @GetMapping("/all")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
+    @PutMapping("/edit/{id}")
+    public User editUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+        return userService.editUser(id, userDto);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+    }
 }

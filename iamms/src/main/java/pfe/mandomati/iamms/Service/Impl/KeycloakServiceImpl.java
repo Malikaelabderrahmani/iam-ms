@@ -159,4 +159,23 @@ public class KeycloakServiceImpl implements KeycloakService {
         localUser.setRole(role);
         userRepository.save(localUser);
     }
+
+    @Override
+    public void updateUserInKeycloak(Long id, User user) {
+        Keycloak keycloak = keycloakConfig.getInstance();
+        UserResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
+        UserRepresentation userRepresentation = usersResource.get(id.toString()).toRepresentation();
+        userRepresentation.setEmail(user.getEmail());
+        userRepresentation.setUsername(user.getEmail());
+        userRepresentation.setFirstName(user.getFirstName());
+        userRepresentation.setLastName(user.getLastName());
+        usersResource.get(id.toString()).update(userRepresentation);
+    }
+
+    @Override
+    public void deleteUserFromKeycloak(Long id) {
+        Keycloak keycloak = keycloakConfig.getInstance();
+        UserResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
+        usersResource.delete(id.toString());
+    }
 }
