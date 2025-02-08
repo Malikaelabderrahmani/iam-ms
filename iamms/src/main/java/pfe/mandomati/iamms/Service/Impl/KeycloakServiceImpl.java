@@ -17,7 +17,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-
 import javax.ws.rs.core.Response;
 import java.util.Collections;
 import java.util.List;
