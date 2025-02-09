@@ -1,12 +1,13 @@
 package pfe.mandomati.iamms.Service.Impl;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.keycloak.OAuth2Constants;
+import java.util.Collections;
+import java.util.List;
+
+import javax.ws.rs.core.Response;
+
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.RoleResource;
-import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.representations.AccessTokenResponse;
@@ -17,17 +18,18 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import javax.ws.rs.core.Response;
-import java.util.Collections;
-import java.util.List;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import pfe.mandomati.iamms.Config.KeycloakConfig;
-import pfe.mandomati.iamms.Repository.UserRepository;
-import pfe.mandomati.iamms.Dto.Login.AccessTokenResponseDto;
 import pfe.mandomati.iamms.Dto.UserDto;
-import pfe.mandomati.iamms.Model.User;
-import pfe.mandomati.iamms.Service.KeycloakService;
+import pfe.mandomati.iamms.Dto.Login.AccessTokenResponseDto;
 import pfe.mandomati.iamms.Model.Role;
-import org.keycloak.admin.client.resource.UserResource;
+import pfe.mandomati.iamms.Model.User;
+import pfe.mandomati.iamms.Repository.UserRepository;
+import pfe.mandomati.iamms.Service.KeycloakService;
+
+
 
 
 @Service

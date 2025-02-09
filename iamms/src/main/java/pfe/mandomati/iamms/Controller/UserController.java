@@ -3,6 +3,7 @@ package pfe.mandomati.iamms.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ import pfe.mandomati.iamms.Service.UserService;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestPreAuthorize("haseRole('ROLE_ADMIN', 'ROLE_ROOT', 'ROLE_RH')")
+@PreAuthorize("haseRole('ROLE_ADMIN', 'ROLE_ROOT', 'ROLE_RH')")
 @RequestMapping("auth/user")
 public class UserController {
     

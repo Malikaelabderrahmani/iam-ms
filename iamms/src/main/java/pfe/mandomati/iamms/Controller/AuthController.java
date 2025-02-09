@@ -1,6 +1,7 @@
 package pfe.mandomati.iamms.Controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,8 @@ public class AuthController {
         return authService.login(username, password);
 
     }
+
+    @PreAuthorize("haseRole('ROLE_ADMIN', 'ROLE_ROOT', 'ROLE_RH')")
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userDTO) {
         return authService.register(userDTO);
