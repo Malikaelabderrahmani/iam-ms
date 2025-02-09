@@ -178,6 +178,6 @@ public class KeycloakServiceImpl implements KeycloakService {
     public void deleteUserFromKeycloak(Long id) {
         Keycloak keycloak = keycloakConfig.getInstance();
         UsersResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
-        usersResource.delete(id.toString());
+        usersResource.get(id.toString()).remove();
     }
 }

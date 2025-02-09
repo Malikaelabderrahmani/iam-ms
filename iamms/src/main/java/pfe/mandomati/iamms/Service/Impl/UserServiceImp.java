@@ -25,6 +25,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     public List<User> getAllUsers() {
+
         return userRepository.findAll();
     }
 
@@ -37,12 +38,10 @@ public class UserServiceImp implements UserService {
     @Transactional
     public User editUser(Long id, UserDto userDto) {
         User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        // Update user in Keycloak
         keycloakService.updateUserInKeycloak(id, userDto);
-        // Update user in local database
         existingUser.setFirstName(userDto.getFirstname());
         existingUser.setLastName(userDto.getLastname());
-        existingUser.setUsername(userDto.getEmail());
+        existingUser.setUsername(userDto.getUsername());
         existingUser.setEmail(userDto.getEmail());
         return userRepository.save(existingUser);
     }
