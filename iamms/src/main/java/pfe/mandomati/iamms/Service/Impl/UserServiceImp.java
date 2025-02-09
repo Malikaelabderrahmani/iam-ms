@@ -48,9 +48,9 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(Long id) {
+    public void deleteUser(String username, Long id) {
         // Delete user from Keycloak
-        keycloakService.deleteUserFromKeycloak(id);
+        keycloakService.deleteUserFromKeycloak(username);
 
         // Delete user from the database
         userRepository.deleteById(id);

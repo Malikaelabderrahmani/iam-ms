@@ -14,5 +14,5 @@ public interface KeycloakService{
     ResponseEntity<String> registerUser(UserDto userDTO);
     List<UserRepresentation> getUser(String userName);
     void updateUserInKeycloak(Long id, UserDto userDto);
-    void deleteUserFromKeycloak(Long id);
+    void deleteUserFromKeycloak(String username);
 }

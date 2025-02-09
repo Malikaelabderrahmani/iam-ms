@@ -175,9 +175,9 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public void deleteUserFromKeycloak(Long id) {
+    public void deleteUserFromKeycloak(String username) {
         Keycloak keycloak = keycloakConfig.getInstance();
         UsersResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
-        usersResource.get(id.toString()).remove();
+        usersResource.get(username).remove();
     }
 }
