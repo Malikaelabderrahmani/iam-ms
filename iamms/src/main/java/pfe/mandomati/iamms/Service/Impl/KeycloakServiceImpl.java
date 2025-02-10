@@ -178,6 +178,18 @@ public class KeycloakServiceImpl implements KeycloakService {
     public void deleteUserFromKeycloak(String username) {
         Keycloak keycloak = keycloakConfig.getInstance();
         UsersResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
-        usersResource.get(username).remove();
+        
+        // Rechercher l'utilisateur par nom d'utilisateur
+        List<UserRepresentation> users = usersResource.search(username);
+        
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found in Keycloak");
+        }
+        
+        // Obtenir l'ID de l'utilisateur
+        String userId = users.get(0).getId();
+        
+        // Supprimer l'utilisateur en utilisant l'ID
+        usersResource.get(userId).remove();
     }
 }
