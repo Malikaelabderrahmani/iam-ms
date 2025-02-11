@@ -30,13 +30,13 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PutMapping("/edit/{id}")
-    public User editUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        return userService.editUser(id, userDto);
+    @PutMapping("/edit/{username}")
+    public User editUser(@PathVariable String username, @RequestBody UserDto userDto) {
+        return userService.editUser(username, userDto);
     }
 
-    @DeleteMapping("/delete/{username}/{id}")
-    public void deleteUser(@PathVariable String username, @PathVariable Long id) {
-        userService.deleteUser(username, id);
+    @DeleteMapping("/delete/{username}")
+    public void deleteUser(@PathVariable String username) {
+        userService.deleteUser(username);
     }
 }

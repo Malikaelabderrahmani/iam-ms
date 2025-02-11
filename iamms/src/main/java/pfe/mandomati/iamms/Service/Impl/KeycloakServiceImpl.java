@@ -163,15 +163,27 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public void updateUserInKeycloak(Long id, UserDto userDto) {
+    public void updateUserInKeycloak(String username, UserDto userDto) {
         Keycloak keycloak = keycloakConfig.getInstance();
         UsersResource usersResource = keycloak.realm(keycloakConfig.getRealm()).users();
-        UserRepresentation userRepresentation = usersResource.get(id.toString()).toRepresentation();
+        
+        // Rechercher l'utilisateur par nom d'utilisateur
+        List<UserRepresentation> users = usersResource.search(username);
+        
+        if (users.isEmpty()) {
+            throw new RuntimeException("User not found in Keycloak");
+        }
+        
+        // Obtenir l'ID de l'utilisateur
+        String userId = users.get(0).getId();
+        
+        // Mettre à jour les informations de l'utilisateur
+        UserRepresentation userRepresentation = usersResource.get(userId).toRepresentation();
         userRepresentation.setEmail(userDto.getEmail());
         userRepresentation.setUsername(userDto.getUsername());
         userRepresentation.setFirstName(userDto.getFirstname());
         userRepresentation.setLastName(userDto.getLastname());
-        usersResource.get(id.toString()).update(userRepresentation);
+        usersResource.get(userId).update(userRepresentation);
     }
 
     @Override
