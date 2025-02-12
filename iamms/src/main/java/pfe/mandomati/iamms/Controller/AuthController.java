@@ -21,6 +21,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @GetMapping("/login")
     public ResponseEntity<AccessTokenResponseDto> login(@RequestBody UserDto userDTO) {
         return authService.login(userDTO.getUsername(), userDTO.getPassword());
 
