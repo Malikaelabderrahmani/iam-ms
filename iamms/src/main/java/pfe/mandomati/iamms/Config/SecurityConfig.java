@@ -69,6 +69,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000"); // Adjust allowed origins as needed
         config.addAllowedOrigin("http://84.247.189.97:8443");
+        config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
