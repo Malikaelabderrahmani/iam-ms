@@ -8,7 +8,14 @@ import pfe.mandomati.iamms.Service.RequestService;
 
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class RequestServiceImp implements RequestService {
 
     @Autowired
@@ -16,7 +23,10 @@ public class RequestServiceImp implements RequestService {
 
     @Override
     public void logRequest(Request request) {
-        requestRepository.save(request);
-    }
-    
+        try {
+            requestRepository.save(request);
+        } catch (Exception e) {
+            log.error("Failed to log request: " + e.getMessage(), e);
+        }
+    }  
 }

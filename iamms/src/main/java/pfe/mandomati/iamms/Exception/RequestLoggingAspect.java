@@ -40,27 +40,58 @@ public class RequestLoggingAspect {
         request.setRequestBody(extractRequestBody(joinPoint));
         request.setType(determineRequestType(httpRequest));
 
-        // Set user if authenticated and exists in our database
         if (SecurityContextHolder.getContext().getAuthentication() != null 
-            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
-            
-            KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-            String email = principal.getKeycloakSecurityContext().getToken().getEmail();
-            
-            // On cherche juste l'utilisateur sans en créer un nouveau
-            userRepository.findByEmail(email).ifPresent(request::setUser);
+        && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
+        
+        KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal();
+        String email = principal.getKeycloakSecurityContext().getToken().getEmail();
+        userRepository.findByEmail(email).ifPresent(request::setUser);
         }
         
         try {
             Object result = joinPoint.proceed();
             return result;
         } catch (Exception e) {
-            request.setStatusCode(determineStatusCode(e));
-            // On enregistre la requête échouée
+            int statusCode = mapExceptionToStatusCode(e);
+            request.setStatusCode(statusCode);
             requestService.logRequest(request);
-            throw e;
+            
+            // Relancer l'exception appropriée
+            throw mapToCustomException(e);
         }
+    }
+
+    private Exception mapToCustomException(Exception e) {
+        if (e.getMessage().contains("not found")) {
+            return new ResourceNotFoundException(e.getMessage());
+        } else if (e.getMessage().toLowerCase().contains("access denied") 
+                  || e.getMessage().toLowerCase().contains("forbidden")) {
+            return new AccessDeniedException(e.getMessage());
+        } else if (e.getMessage().toLowerCase().contains("unauthorized") 
+                  || e.getMessage().toLowerCase().contains("not authenticated")) {
+            return new UnauthorizedException(e.getMessage());
+        } else if (e.getMessage().toLowerCase().contains("bad gateway") 
+                  || e.getMessage().toLowerCase().contains("service unavailable")) {
+            return new BadGatewayException(e.getMessage());
+        }
+        return e;
+    }
+
+    private int mapExceptionToStatusCode(Exception e) {
+        String message = e.getMessage().toLowerCase();
+        if (message.contains("not found")) {
+            return 404;
+        } else if (message.contains("access denied") || message.contains("forbidden")) {
+            return 403;
+        } else if (message.contains("unauthorized") || message.contains("not authenticated")) {
+            return 401;
+        } else if (message.contains("bad gateway") || message.contains("service unavailable")) {
+            return 502;
+        } else if (message.contains("bad request") || message.contains("invalid")) {
+            return 400;
+        }
+        return 500;
     }
    
     private RequestType determineRequestType(HttpServletRequest request) {
@@ -89,21 +120,5 @@ public class RequestLoggingAspect {
         } catch (Exception e) {
             return "Could not serialize request body";
         }
-    }
-
-    private int determineStatusCode(Exception e) {
-        if (e instanceof SecurityException || e instanceof AccessDeniedException) {
-            return 403;
-        } else if (e instanceof IllegalArgumentException) {
-            return 400;
-        } else if (e instanceof ResourceNotFoundException) {
-            return 404;
-        } else if (e instanceof UnauthorizedException) {
-            return 401;
-        } else if (e instanceof BadGatewayException) {
-            return 502;
-        } else {
-            return 500;
-        }
-    }
+    }  
 }
