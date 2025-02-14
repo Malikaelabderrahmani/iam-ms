@@ -14,17 +14,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import pfe.mandomati.iamms.Model.Request;
 import pfe.mandomati.iamms.Model.Enums.RequestType;
-import pfe.mandomati.iamms.Repository.RequestRepository;
 import pfe.mandomati.iamms.Repository.UserRepository;
+import pfe.mandomati.iamms.Service.RequestService;  
 import org.keycloak.KeycloakPrincipal;
+
 
 
 @Aspect
 @Component
 @RequiredArgsConstructor
 public class RequestLoggingAspect {
-    
-    private final RequestRepository requestRepository;
+
+    private final RequestService requestService;
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
@@ -57,7 +58,7 @@ public class RequestLoggingAspect {
         } catch (Exception e) {
             request.setStatusCode(determineStatusCode(e));
             // On enregistre la requête échouée
-            requestRepository.save(request);
+            requestService.logRequest(request);
             throw e;
         }
     }
