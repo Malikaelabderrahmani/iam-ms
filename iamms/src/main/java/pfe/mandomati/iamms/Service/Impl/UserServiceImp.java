@@ -36,9 +36,14 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public User editUser(Long id, UserDto userDto) {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        keycloakService.updateUserInKeycloak(id, userDto);
+    public User editUser(String username, UserDto userDto) {
+        // Rechercher l'utilisateur dans la base de données par nom d'utilisateur
+        User existingUser = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Mettre à jour l'utilisateur dans Keycloak
+        keycloakService.updateUserInKeycloak(username, userDto);
+
+        // Mettre à jour les informations de l'utilisateur dans la base de données
         existingUser.setFirstName(userDto.getFirstname());
         existingUser.setLastName(userDto.getLastname());
         existingUser.setUsername(userDto.getUsername());
@@ -48,11 +53,14 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(String username, Long id) {
-        // Delete user from Keycloak
+    public void deleteUser(String username) {
+        // Rechercher l'utilisateur dans la base de données par nom d'utilisateur
+        User existingUser = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Supprimez l'utilisateur de Keycloak en utilisant l'ID
         keycloakService.deleteUserFromKeycloak(username);
 
-        // Delete user from the database
-        userRepository.deleteById(id);
+        // Supprimez l'utilisateur de la base de données
+        userRepository.deleteById(existingUser.getId());
     }
 }
