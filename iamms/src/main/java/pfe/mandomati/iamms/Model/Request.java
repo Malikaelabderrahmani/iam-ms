@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import pfe.mandomati.iamms.Model.Enums.RequestType;
 import pfe.mandomati.iamms.Model.User;
 
@@ -24,6 +25,7 @@ import pfe.mandomati.iamms.Model.User;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Request {
 
     @Id
@@ -42,6 +44,7 @@ public class Request {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     private User user;
 
     private String endpoint;

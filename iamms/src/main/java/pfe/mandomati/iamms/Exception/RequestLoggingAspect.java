@@ -33,9 +33,15 @@ public class RequestLoggingAspect {
 
     @Around("@within(org.springframework.web.bind.annotation.RestController) || @within(org.springframework.stereotype.Controller)")
     public Object logRequest(ProceedingJoinPoint joinPoint) throws Throwable {
+
+        log.info("=== Starting request logging ===");
+
         HttpServletRequest httpRequest = ((ServletRequestAttributes) RequestContextHolder
                 .currentRequestAttributes()).getRequest();
-        
+
+        log.info("URI: {}", httpRequest.getRequestURI());
+        log.info("Method: {}", httpRequest.getMethod());
+
         Request request = new Request();
         request.setEndpoint(httpRequest.getRequestURI());
         request.setIpAddress(getClientIp(httpRequest));
@@ -45,26 +51,58 @@ public class RequestLoggingAspect {
         log.debug("Created request object: {}", request);
 
 
-        if (SecurityContextHolder.getContext().getAuthentication() != null 
-        && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
-        
-        KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
-        String email = principal.getKeycloakSecurityContext().getToken().getEmail();
-        userRepository.findByEmail(email).ifPresent(request::setUser);
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            log.info("Authentication is present");
+            if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
+                log.info("Principal is KeycloakPrincipal");
+                try {
+                    KeycloakPrincipal principal = (KeycloakPrincipal) SecurityContextHolder.getContext()
+                        .getAuthentication().getPrincipal();
+                    String email = principal.getKeycloakSecurityContext().getToken().getEmail();
+                    log.info("User email: {}", email);
+                    
+                    userRepository.findByEmail(email).ifPresent(user -> {
+                        request.setUser(user);
+                        log.info("User set in request: {}", user.getEmail());
+                    });
+                } catch (Exception e) {
+                    log.error("Error while setting user: ", e);
+                }
+            }
         }
         
         try {
+            log.info("Proceeding with request execution");
             Object result = joinPoint.proceed();
+            request.setStatusCode(200);
+            log.info("Request executed successfully, setting status code 200");
+            
+            try {
+                log.info("Attempting to save request");
+                requestService.logRequest(request);
+                log.info("Request saved successfully");
+            } catch (Exception e) {
+                log.error("Failed to save request: ", e);
+            }
             return result;
         } catch (Exception e) {
+            log.error("Exception occurred during request execution: ", e);
             int statusCode = mapExceptionToStatusCode(e);
+            log.info("Mapped status code: {}", statusCode);
             request.setStatusCode(statusCode);
-            requestService.logRequest(request);
             
-            // Relancer l'exception appropriée
+            try {
+                log.info("Attempting to save failed request");
+                requestService.logRequest(request);
+                log.info("Failed request saved successfully");
+            } catch (Exception saveException) {
+                log.error("Failed to save failed request: ", saveException);
+            }
+            
             throw mapToCustomException(e);
-        }
+        } finally {
+        log.info("=== Request logging completed ===");
+    }
     }
 
     private Exception mapToCustomException(Exception e) {
@@ -84,9 +122,9 @@ public class RequestLoggingAspect {
     }
 
     private int mapExceptionToStatusCode(Exception e) {
-        String message = e.getMessage().toLowerCase();
-        log.debug("Exception message: " + message);
-
+        String message = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+        log.info("Mapping exception message to status code: {}", message);
+        
         if (message.contains("not found")) {
             return 404;
         } else if (message.contains("access denied") || message.contains("forbidden")) {

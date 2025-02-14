@@ -23,12 +23,16 @@ public class RequestServiceImp implements RequestService {
     @Override
     public void logRequest(Request request) {
         try {
-            log.debug("Attempting to save request: {}", request);
-            requestRepository.save(request);
-            log.debug("Successfully saved request");
+            log.info("Starting to save request for endpoint: {}", request.getEndpoint());
+            log.info("Request details: {}", request);
+            
+            Request savedRequest = requestRepository.save(request);
+            log.info("Request saved successfully with ID: {}", savedRequest.getId());
         } catch (Exception e) {
-            log.error("Failed to log request: " + e.getMessage(), e);
-            throw e; 
+            log.error("Error while saving request: ", e);
+            // Print the full stack trace
+            e.printStackTrace();
+            throw e;
         }
     }  
 }

@@ -37,3 +37,8 @@ jwt:
       resource-id: client
       principal-attribute: preferred_username
 
+logging:
+  level:
+    pfe.mandomati.iamms: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
