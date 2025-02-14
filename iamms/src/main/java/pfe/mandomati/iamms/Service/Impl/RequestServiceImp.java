@@ -18,15 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RequestServiceImp implements RequestService {
 
-    @Autowired
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     @Override
     public void logRequest(Request request) {
         try {
+            log.debug("Attempting to save request: {}", request);
             requestRepository.save(request);
+            log.debug("Successfully saved request");
         } catch (Exception e) {
             log.error("Failed to log request: " + e.getMessage(), e);
+            throw e; 
         }
     }  
 }

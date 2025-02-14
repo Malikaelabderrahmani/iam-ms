@@ -15,11 +15,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pfe.mandomati.iamms.Model.Request;
 import pfe.mandomati.iamms.Model.Enums.RequestType;
 import pfe.mandomati.iamms.Repository.UserRepository;
-import pfe.mandomati.iamms.Service.RequestService;  
+import pfe.mandomati.iamms.Service.RequestService;
+
+import lombok.extern.slf4j.Slf4j;
 import org.keycloak.KeycloakPrincipal;
 
 
-
+@Slf4j
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -39,6 +41,9 @@ public class RequestLoggingAspect {
         request.setIpAddress(getClientIp(httpRequest));
         request.setRequestBody(extractRequestBody(joinPoint));
         request.setType(determineRequestType(httpRequest));
+
+        log.debug("Created request object: {}", request);
+
 
         if (SecurityContextHolder.getContext().getAuthentication() != null 
         && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof KeycloakPrincipal) {
@@ -80,6 +85,8 @@ public class RequestLoggingAspect {
 
     private int mapExceptionToStatusCode(Exception e) {
         String message = e.getMessage().toLowerCase();
+        log.debug("Exception message: " + message);
+
         if (message.contains("not found")) {
             return 404;
         } else if (message.contains("access denied") || message.contains("forbidden")) {
