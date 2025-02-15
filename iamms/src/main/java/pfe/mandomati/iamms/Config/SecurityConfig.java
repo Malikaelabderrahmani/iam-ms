@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(AUTH_WHITELIST).permitAll()// Allow auth login endpoint
                         .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
-                        .requestMatchers("/auth/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
+                        .requestMatchers("/api/auth/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
@@ -55,7 +55,7 @@ public class SecurityConfig {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("resource_access.client.roles");
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        //grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
