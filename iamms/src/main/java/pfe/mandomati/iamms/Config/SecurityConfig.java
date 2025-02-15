@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(AUTH_WHITELIST).permitAll()// Allow auth login endpoint
                         .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
-                        .requestMatchers("/api/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
+                        .requestMatchers("/auth/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
