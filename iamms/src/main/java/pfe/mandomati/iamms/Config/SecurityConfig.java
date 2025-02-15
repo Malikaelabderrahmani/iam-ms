@@ -33,7 +33,7 @@ public class SecurityConfig {
     @Value("${client-jwk-set-uri}")
     private String clientJwtSetUri;
 
- @Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration(corsFilter())))
@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .build();
     }
 
-@Bean
+    @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("resource_access.client.roles");
@@ -65,7 +65,6 @@ public class SecurityConfig {
         });
         return jwtAuthenticationConverter;
     }
-
 
     @Bean
     public SimpleAuthorityMapper keycloakAuthorityMapper() {
@@ -92,7 +91,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000"); // Adjust allowed origins as needed
         config.addAllowedOrigin("http://84.247.189.97:8443");
-        config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
+          config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
