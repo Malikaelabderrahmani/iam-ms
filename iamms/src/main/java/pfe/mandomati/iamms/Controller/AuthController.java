@@ -26,7 +26,7 @@ public class AuthController {
         return authService.login(userDTO.getUsername(), userDTO.getPassword());
     }
 
-    //@PreAuthorize("hasAnyRole('ADMIN', 'ROOT', 'RH')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ROOT', 'RH')")
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userDTO) {
         return authService.register(userDTO);

@@ -1,5 +1,7 @@
 package pfe.mandomati.iamms.Config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +14,9 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,29 +24,48 @@ import jakarta.servlet.http.HttpServletRequest;
 @Configuration 
 public class SecurityConfig {
 
+  private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
   private static final String[] AUTH_WHITELIST = {
-            "/auth/**" // Allow unrestricted access to the auth endpoints
+            "/auth/login" // Allow unrestricted access to the auth endpoints
     };
 
     @Value("${client-jwk-set-uri}")
     private String clientJwtSetUri;
 
-    @Bean
+ @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration(corsFilter())))
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(AUTH_WHITELIST).permitAll() // Allow auth endpoint
+                        .requestMatchers(AUTH_WHITELIST).permitAll()// Allow auth login endpoint
+                        .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
+                        .requestMatchers("/api/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .authenticationManagerResolver(authenticationManagerResolver(jwtClientDecoder()))
-
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
                 .build();
     }
+
+@Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("resource_access.client.roles");
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            logger.debug("JWT Claims: {}", jwt.getClaims());
+            return grantedAuthoritiesConverter.convert(jwt);
+        });
+        return jwtAuthenticationConverter;
+    }
+
 
     @Bean
     public SimpleAuthorityMapper keycloakAuthorityMapper() {

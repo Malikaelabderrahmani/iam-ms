@@ -18,7 +18,7 @@ import pfe.mandomati.iamms.Service.UserService;
 
 @RestController
 @RequiredArgsConstructor
-//@PreAuthorize("hasAnyRole('ADMIN', 'ROOT', 'RH')")
+@PreAuthorize("hasAnyRole('ADMIN', 'ROOT', 'RH')")
 @RequestMapping("auth/user")
 public class UserController {
     
