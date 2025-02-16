@@ -24,10 +24,10 @@ import jakarta.servlet.http.HttpServletRequest;
 @Configuration 
 public class SecurityConfig {
 
-  private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
-  private static final String[] AUTH_WHITELIST = {
-            "/auth/login" // Allow unrestricted access to the auth login endpoint
+    private static final String[] AUTH_WHITELIST = {
+            "/auth/login" // Autoriser l'accès à l'endpoint de connexion
     };
 
     @Value("${client-jwk-set-uri}")
@@ -37,14 +37,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration(corsFilter())))
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
+                .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour API stateless
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(AUTH_WHITELIST).permitAll() // Allow auth login endpoint
-                        .requestMatchers("/auth/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
-                        .requestMatchers("/auth/user/**").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to user endpoints
-                        .anyRequest().authenticated() // Protect all other endpoints
+                        .requestMatchers(AUTH_WHITELIST).permitAll() // Autoriser l'accès au login
+                        .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
+                        .requestMatchers("/api/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restreindre l'accès à l'inscription
+                        .anyRequest().authenticated() // Protéger tous les autres endpoints
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // API stateless
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 )
@@ -55,7 +55,7 @@ public class SecurityConfig {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("resource_access.client.roles");
-        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        grantedAuthoritiesConverter.setAuthorityPrefix(""); // Suppression de "ROLE_"
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
@@ -91,7 +91,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000"); // Adjust allowed origins as needed
         config.addAllowedOrigin("http://84.247.189.97:8443");
-        config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
+          config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
@@ -99,7 +99,6 @@ public class SecurityConfig {
         config.addAllowedMethod("DELETE");
         return config;
     }
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
