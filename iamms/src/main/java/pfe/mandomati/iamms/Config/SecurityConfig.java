@@ -27,7 +27,7 @@ public class SecurityConfig {
   private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
   private static final String[] AUTH_WHITELIST = {
-            "/auth/login" // Allow unrestricted access to the auth endpoints
+            "/auth/login" // Allow unrestricted access to the auth login endpoint
     };
 
     @Value("${client-jwk-set-uri}")
@@ -39,9 +39,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> new CorsConfiguration(corsFilter())))
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(AUTH_WHITELIST).permitAll()// Allow auth login endpoint
-                        .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
-                        .requestMatchers("/api/auth/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
+                        .requestMatchers(AUTH_WHITELIST).permitAll() // Allow auth login endpoint
+                        .requestMatchers("/auth/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to register endpoint
+                        .requestMatchers("/auth/user/**").hasAnyRole("ADMIN", "ROOT", "RH") // Restrict access to user endpoints
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session
@@ -55,7 +55,7 @@ public class SecurityConfig {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("resource_access.client.roles");
-        //grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
@@ -91,7 +91,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000"); // Adjust allowed origins as needed
         config.addAllowedOrigin("http://84.247.189.97:8443");
-          config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
+        config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
@@ -99,6 +99,7 @@ public class SecurityConfig {
         config.addAllowedMethod("DELETE");
         return config;
     }
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
