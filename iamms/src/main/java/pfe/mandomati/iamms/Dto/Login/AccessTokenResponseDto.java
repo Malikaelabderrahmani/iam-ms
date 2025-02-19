@@ -42,22 +42,25 @@ public class AccessTokenResponseDto {
             SignedJWT signedJWT = SignedJWT.parse(token);
             String kid = signedJWT.getHeader().getKeyID(); // Récupérer l'ID de la clé
             PublicKey publicKey = getKeycloakPublicKey(kid); // Charger la clé publique
-
+    
             // 2️ Vérifier la signature
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(publicKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-
-            // 3️ Extraire le rôle de l'utilisateur
+    
+            // 3️ Récupérer le client_id utilisé (azp)
+            String clientId = claims.get("azp", String.class);  // 🔥 Obtenir le vrai client_id
+    
+            // 4️ Extraire les rôles de `resource_access`
             Map<String, Object> resourceAccess = claims.get("resource_access", Map.class);
             if (resourceAccess != null) {
-                Map<String, Object> clientAccess = (Map<String, Object>) resourceAccess.get("client"); // Remplace "client"
+                Map<String, Object> clientAccess = (Map<String, Object>) resourceAccess.get(clientId); 
                 if (clientAccess != null) {
                     List<String> roles = (List<String>) clientAccess.get("roles");
                     if (roles != null && !roles.isEmpty()) {
-                        return roles.get(0);
+                        return roles.get(0); // Retourne le premier rôle trouvé
                     }
                 }
             }
