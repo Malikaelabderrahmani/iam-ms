@@ -38,38 +38,53 @@ public class AccessTokenResponseDto {
      */
     private static String extractRoleFromToken(String token) {
         try {
-            // 1️ Parser le JWT pour obtenir le `kid`
+            // 1️⃣ Parser le JWT pour obtenir le `kid`
             SignedJWT signedJWT = SignedJWT.parse(token);
             String kid = signedJWT.getHeader().getKeyID(); // Récupérer l'ID de la clé
             PublicKey publicKey = getKeycloakPublicKey(kid); // Charger la clé publique
     
-            // 2️ Vérifier la signature
+            // 2️⃣ Vérifier la signature et extraire les claims
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(publicKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
     
-            // 3️ Récupérer le client_id utilisé (azp)
-            String clientId = claims.get("azp", String.class);  // 🔥 Obtenir le vrai client_id
+            // 3️⃣ Récupérer `clientId` (l'application qui a émis le token)
+            String clientId = claims.get("azp", String.class);
+            System.out.println("Client ID utilisé : " + clientId);
     
-            // 4️ Extraire les rôles de `resource_access`
+            // 4️⃣ Extraire les rôles de `resource_access`
             Map<String, Object> resourceAccess = claims.get("resource_access", Map.class);
-            if (resourceAccess != null) {
-                Map<String, Object> clientAccess = (Map<String, Object>) resourceAccess.get(clientId); 
+            System.out.println("Contenu de resource_access : " + resourceAccess);
+    
+            if (resourceAccess != null && clientId != null) {
+                Map<String, Object> clientAccess = (Map<String, Object>) resourceAccess.get(clientId);
                 if (clientAccess != null) {
                     List<String> roles = (List<String>) clientAccess.get("roles");
                     if (roles != null && !roles.isEmpty()) {
+                        System.out.println("Rôle trouvé dans resource_access : " + roles.get(0));
                         return roles.get(0); // Retourne le premier rôle trouvé
                     }
+                }
+            }
+    
+            // 5️⃣ Si `resource_access` ne contient pas de rôle, essayer `realm_access`
+            Map<String, Object> realmAccess = claims.get("realm_access", Map.class);
+            if (realmAccess != null) {
+                List<String> realmRoles = (List<String>) realmAccess.get("roles");
+                if (realmRoles != null && !realmRoles.isEmpty()) {
+                    System.out.println("Rôle trouvé dans realm_access : " + realmRoles.get(0));
+                    return realmRoles.get(0); // Retourne le premier rôle trouvé dans `realm_access`
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "UNKNOWN_ROLE";
+    
+        System.out.println("Aucun rôle trouvé, retour UNKNOWN_ROLE");
+        return "UNKNOWN_ROLE"; // Si aucun rôle n'est trouvé
     }
-
     /**
      * Récupère la clé publique Keycloak en fonction du `kid` du token JWT.
      */
