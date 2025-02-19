@@ -27,7 +27,7 @@ public class SecurityConfig {
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     private static final String[] AUTH_WHITELIST = {
-            "/auth/login" // Autoriser l'accès à l'endpoint de connexion
+            "/auth/**" // Autoriser l'accès à l'endpoint de connexion
     };
 
     @Value("${client-jwk-set-uri}")
@@ -40,8 +40,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Désactiver CSRF pour API stateless
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(AUTH_WHITELIST).permitAll() // Autoriser l'accès au login
-                        .requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
-                        .requestMatchers("/api/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restreindre l'accès à l'inscription
+                        //.requestMatchers("/api/user/**").hasAnyRole("ADMIN", "ROOT", "RH")
+                        //.requestMatchers("/api/register").hasAnyRole("ADMIN", "ROOT", "RH") // Restreindre l'accès à l'inscription
                         .anyRequest().authenticated() // Protéger tous les autres endpoints
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // API stateless
