@@ -5,5 +5,4 @@ public enum RequestType {
     LOGIN,
     LOGOUT,
     API_CALL,
-    TOKEN_REFRESH
 }
