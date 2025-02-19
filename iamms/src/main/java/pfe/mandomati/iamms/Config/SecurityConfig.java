@@ -93,6 +93,7 @@ public class SecurityConfig {
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedOrigin("http://84.247.189.97:8443");
         config.addAllowedOrigin("https://auth-web-peach.vercel.app"); // Add your frontend origin
+        config.addAllowedOriginPattern("*"); // Allow all origins
         config.addAllowedHeader("*");
         config.addAllowedMethod("GET");
         config.addAllowedMethod("POST");
