@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
         if (exception instanceof BadCredentialsException) {
             statusCode = 401;
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(statusCode), exception.getMessage());
-            errorDetail.setProperty("description", "The username or password is incorrect");
+            errorDetail.setProperty("description", "Invalid login credentials or error during login. The username or password is incorrect");
         } else if (exception instanceof AccountStatusException) {
             statusCode = 403;
             errorDetail = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(statusCode), exception.getMessage());

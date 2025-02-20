@@ -29,7 +29,7 @@ public class UserServiceImp implements UserService {
         try {
             return userRepository.findAll();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to retrieve users", e);
+            throw new UserNotFoundException("Failed to retrieve users", e);
         }
     }
 

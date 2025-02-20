@@ -16,6 +16,7 @@ import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -50,7 +51,7 @@ public class KeycloakServiceImpl implements KeycloakService {
             return ResponseEntity.ok(AccessTokenResponseDto.toAccessTokenResponseDTO(response));
         } catch (Exception e) {
             log.error("Login failed for user: {}", username, e);
-            throw new RuntimeException("Invalid login credentials or error during login", e);
+            throw new BadCredentialsException("Invalid login credentials or error during login");
         }
     }
 
