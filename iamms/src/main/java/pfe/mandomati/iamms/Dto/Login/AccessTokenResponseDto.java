@@ -20,7 +20,7 @@ import java.util.Map;
 @Builder
 public class AccessTokenResponseDto {
 
-    private static final String KEYCLOAK_JWKS_URL = "http://localhost:8080/realms/SchoolManagement/protocol/openid-connect/certs";
+    private static final String KEYCLOAK_JWKS_URL = "https://elaoumrani:8444/realms/SchoolManagement/protocol/openid-connect/certs";
 
     private String accessToken;
     private String roleName;
