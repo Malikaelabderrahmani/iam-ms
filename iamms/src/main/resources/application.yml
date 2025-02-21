@@ -32,7 +32,7 @@ keycloak:
   auth-server-url: https://elaoumrani.com:8444
   client-id: client
   credentials:
-    secret: y2z8T3huZyBomThwFPAlRUOjoqoiTaJ9
+    secret: z72lJGSglXZ57Z6T3Gi8vcPLOE5OSEea
   principal-attribute: preferred_username
 
 client-jwk-set-uri: "https://elaoumrani:8444/realms/SchoolManagement/protocol/openid-connect/certs"
