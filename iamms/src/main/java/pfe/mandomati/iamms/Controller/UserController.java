@@ -48,13 +48,16 @@ public class UserController {
         else if (roleName.equals("student")) {
             return userService.findAllByRoleName("STUDENT");
         }
-        else {
+        else if (roleName.equals("parent")){
             return userService.findAllByRoleName("PARENT");
+        }
+        else {
+            throw new RuntimeException("Role not found");
         }
     }
 
     @GetMapping("/role/{roleName}/{id}")
-    public UsersMsDto getMethodName(@PathVariable  String roleName, @PathVariable Long id) {
+    public UsersMsDto findByRoleNameAndId(@PathVariable  String roleName, @PathVariable Long id) {
         if (roleName.equals("admin")) {
             return userService.findByRoleNameAndId("ADMIN", id);
         }
@@ -64,8 +67,11 @@ public class UserController {
         else if (roleName.equals("student")) {
             return userService.findByRoleNameAndId("STUDENT", id);
         }
-        else {
+        else if (roleName.equals("parent")){
             return userService.findByRoleNameAndId("PARENT", id);
+        }
+        else {
+            throw new RuntimeException("Role not found");
         }
     }
     

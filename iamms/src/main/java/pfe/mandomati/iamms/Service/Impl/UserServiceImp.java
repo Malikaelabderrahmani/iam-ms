@@ -82,6 +82,10 @@ public class UserServiceImp implements UserService {
     public List<UsersMsDto> findAllByRoleName(String roleName) {
         List<User> users = userRepository.findAllByRoleName(roleName);
 
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("Users not found with role: " + roleName);
+        }
+        
         return users.stream()
                 .map(user -> new UsersMsDto(
                     user.getId(), 
@@ -100,6 +104,9 @@ public class UserServiceImp implements UserService {
     public UsersMsDto findByRoleNameAndId(String roleName, Long id) {
         User user = userRepository.findByRoleNameAndId(roleName, id);
 
+        if (user == null) {
+            throw new UserNotFoundException("User not found with ID: " + id);
+        }
         return new UsersMsDto(
             user.getId(), 
             user.getFirstName(),

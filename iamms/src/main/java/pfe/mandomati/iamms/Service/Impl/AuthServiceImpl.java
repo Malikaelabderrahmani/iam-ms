@@ -1,6 +1,7 @@
 package pfe.mandomati.iamms.Service.Impl;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
             return keycloakService.login(username, password);
         } catch (Exception e) {
             log.error("Login failed for user: {}", username, e);
-            throw new RuntimeException("Invalid login credentials or error during login", e);
+            throw new BadCredentialsException("Invalid login credentials or error during login", e);
         }
     }
 
