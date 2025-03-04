@@ -45,6 +45,9 @@ public class UserController {
         else if (roleName.equals("teacher")) {
             return userService.findAllByRoleName("TEACHER");
         }
+        else if (roleName.equals("rh")) {
+            return userService.findAllByRoleName("RH");
+        }
         else if (roleName.equals("student")) {
             return userService.findAllByRoleName("STUDENT");
         }
@@ -64,8 +67,12 @@ public class UserController {
         else if (roleName.equals("teacher")) {
             return userService.findByRoleNameAndId("TEACHER", id);
         }
+        else if (roleName.equals("rh")) {
+            return userService.findByRoleNameAndId("RH", id);
+        }
         else if (roleName.equals("student")) {
             return userService.findByRoleNameAndId("STUDENT", id);
+        
         }
         else if (roleName.equals("parent")){
             return userService.findByRoleNameAndId("PARENT", id);
