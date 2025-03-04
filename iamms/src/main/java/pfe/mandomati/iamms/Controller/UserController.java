@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import pfe.mandomati.iamms.Dto.UserDto;
+import pfe.mandomati.iamms.Dto.UsersMsDto;
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Service.UserService;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -29,6 +31,44 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
+
+    @GetMapping("/get/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.getUserById(id);
+    }
+
+    @GetMapping("/role/{roleName}")
+    public List<UsersMsDto> findAllByRoleName(@PathVariable String roleName) {
+        if (roleName.equals("admin")) {
+            return userService.findAllByRoleName("ADMIN");
+        }
+        else if (roleName.equals("teacher")) {
+            return userService.findAllByRoleName("TEACHER");
+        }
+        else if (roleName.equals("student")) {
+            return userService.findAllByRoleName("STUDENT");
+        }
+        else {
+            return userService.findAllByRoleName("PARENT");
+        }
+    }
+
+    @GetMapping("/role/{roleName}/{id}")
+    public UsersMsDto getMethodName(@PathVariable  String roleName, @PathVariable Long id) {
+        if (roleName.equals("admin")) {
+            return userService.findByRoleNameAndId("ADMIN", id);
+        }
+        else if (roleName.equals("teacher")) {
+            return userService.findByRoleNameAndId("TEACHER", id);
+        }
+        else if (roleName.equals("student")) {
+            return userService.findByRoleNameAndId("STUDENT", id);
+        }
+        else {
+            return userService.findByRoleNameAndId("PARENT", id);
+        }
+    }
+    
 
     @PutMapping("/edit/{username}")
     public User editUser(@PathVariable String username, @RequestBody UserDto userDto) {
