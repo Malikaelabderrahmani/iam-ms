@@ -15,8 +15,6 @@ import pfe.mandomati.iamms.Model.Request;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Model.Enums.RequestType;
 import pfe.mandomati.iamms.Service.RequestService;
-import pfe.mandomati.iamms.Exception.UserNotFoundException;
-import pfe.mandomati.iamms.Exception.KeycloakException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

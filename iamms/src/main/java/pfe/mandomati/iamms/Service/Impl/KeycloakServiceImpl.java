@@ -18,16 +18,16 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+//import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import pfe.mandomati.iamms.Config.KeycloakConfig;
 import pfe.mandomati.iamms.Dto.UserDto;
 import pfe.mandomati.iamms.Dto.Login.AccessTokenResponseDto;
-import pfe.mandomati.iamms.Model.Role;
-import pfe.mandomati.iamms.Model.User;
-import pfe.mandomati.iamms.Repository.UserRepository;
+//import pfe.mandomati.iamms.Model.Role;
+//import pfe.mandomati.iamms.Model.User;
+//import pfe.mandomati.iamms.Repository.UserRepository;
 import pfe.mandomati.iamms.Service.KeycloakService;
 
 
@@ -38,9 +38,9 @@ import pfe.mandomati.iamms.Service.KeycloakService;
 @Slf4j
 public class KeycloakServiceImpl implements KeycloakService {
 
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
     private final KeycloakConfig keycloakConfig;
-    private final LocalValidatorFactoryBean defaultValidator;
+    //private final LocalValidatorFactoryBean defaultValidator;
     //private final String defaultRole = "ADMIN";
 
     @Override
@@ -155,13 +155,13 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
 
-    private void saveUserLocally(UserDto userDTO, Role role) {
+    /*private void saveUserLocally(UserDto userDTO, Role role) {
         User localUser = new User();
         localUser.setUsername(userDTO.getUsername());
         localUser.setEmail(userDTO.getEmail());
         localUser.setRole(role);
         userRepository.save(localUser);
-    }
+    }*/
 
     @Override
     public void updateUserInKeycloak(String username, UserDto userDto) {

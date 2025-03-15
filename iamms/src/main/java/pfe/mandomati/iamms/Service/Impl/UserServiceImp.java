@@ -1,6 +1,7 @@
 package pfe.mandomati.iamms.Service.Impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import pfe.mandomati.iamms.Repository.UserRepository;
 import pfe.mandomati.iamms.Service.UserService;
 import pfe.mandomati.iamms.Service.KeycloakService;
 import pfe.mandomati.iamms.Dto.UserDto;
+import pfe.mandomati.iamms.Dto.UsersMsDto;
 import pfe.mandomati.iamms.Exception.UserNotFoundException;
 import pfe.mandomati.iamms.Exception.KeycloakException;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,5 +76,52 @@ public class UserServiceImp implements UserService {
 
         // Supprimez l'utilisateur de la base de données
         userRepository.deleteById(existingUser.getId());
+    }
+
+    @Override
+    public List<UsersMsDto> findAllByRoleName(String roleName) {
+        List<User> users = userRepository.findAllByRoleName(roleName);
+
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("Users not found with role: " + roleName);
+        }
+        
+        return users.stream()
+                .map(user -> new UsersMsDto(
+                    user.getId(), 
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getEmail(),
+                    user.getRole().getName(),
+                    user.getAddress(),
+                    user.getBirthDate(),
+                    user.getCity()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UsersMsDto findByRoleNameAndId(String roleName, Long id) {
+        User user = userRepository.findByRoleNameAndId(roleName, id);
+
+        if (user == null) {
+            throw new UserNotFoundException("User not found with ID: " + id);
+        }
+        return new UsersMsDto(
+            user.getId(), 
+            user.getFirstName(),
+            user.getLastName(),
+            user.getEmail(),
+            user.getRole().getName(),
+            user.getAddress(),
+            user.getBirthDate(),
+            user.getCity()
+        );
+
+    }
+
+    @Override
+    public boolean checkUserExistsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 }

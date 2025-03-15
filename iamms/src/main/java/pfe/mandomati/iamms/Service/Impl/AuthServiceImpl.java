@@ -1,6 +1,7 @@
 package pfe.mandomati.iamms.Service.Impl;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,8 +55,13 @@ public class AuthServiceImpl implements AuthService {
             return ResponseEntity.ok(responseDto);
     
         } catch (Exception e) {
+<<<<<<< HEAD
             log.error("Échec de connexion pour l'utilisateur : {}", username, e);
             throw new RuntimeException("Identifiants invalides ou erreur de connexion", e);
+=======
+            log.error("Login failed for user: {}", username, e);
+            throw new BadCredentialsException("Invalid login credentials or error during login", e);
+>>>>>>> a387aad53ec0216200eaa0ed67f9365d728d06be
         }
     }
 
@@ -65,7 +71,15 @@ public class AuthServiceImpl implements AuthService {
         try {
             ResponseEntity<String> response = keycloakService.registerUser(userDTO);
             if (response.getStatusCode().is2xxSuccessful()) {
-                saveUserLocally(userDTO);
+                try {
+                    User savedUser = saveUserLocally(userDTO);
+                    String responseBody = String.format("User registered successfully with ID: %d", savedUser.getId());
+                    return ResponseEntity.status(response.getStatusCode()).body(responseBody);
+                } catch (Exception e) {
+                    log.error("Failed to save user locally, deleting user from Keycloak: {}", userDTO.getUsername(), e);
+                    keycloakService.deleteUserFromKeycloak(userDTO.getUsername());
+                    throw new RuntimeException("Failed to save user locally, user deleted from Keycloak", e);
+                }
             }
             return response;
         } catch (Exception e) {
@@ -74,7 +88,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private void saveUserLocally(UserDto userDTO) {
+    private User saveUserLocally(UserDto userDTO) {
         //String defaultRole = "ADMIN";
         Role role = roleRepository.findByName(userDTO.getRole().getName())
         .orElseThrow(() -> new RuntimeException("Role not found"));
@@ -90,6 +104,6 @@ public class AuthServiceImpl implements AuthService {
         user.setAddress(userDTO.getAddress());
         user.setCity(userDTO.getCity());
         user.setCreatedAt(userDTO.getCreatedAt());
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }

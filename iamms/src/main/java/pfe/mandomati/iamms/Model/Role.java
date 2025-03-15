@@ -15,8 +15,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pfe.mandomati.iamms.Model.Permission;
-
 @Entity
 @Table(name = "roles") 
 @Data
