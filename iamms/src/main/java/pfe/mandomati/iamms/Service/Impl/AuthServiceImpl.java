@@ -29,10 +29,33 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<AccessTokenResponseDto> login(String username, String password) {
         try {
-            return keycloakService.login(username, password);
+            // Authentifier l'utilisateur avec Keycloak
+            ResponseEntity<AccessTokenResponseDto> keycloakResponse = keycloakService.login(username, password);
+            
+            if (!keycloakResponse.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Échec de l'authentification");
+            }
+    
+            // Trouver l'utilisateur en base de données
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    
+            // Récupérer le rôle en faisant la jointure avec la table Role
+            String roleName = roleRepository.findById(user.getRole().getId())
+                    .map(Role::getName)
+                    .orElse("UNKNOWN_ROLE");
+    
+            // Construire la réponse avec le token et le rôle
+            AccessTokenResponseDto responseDto = AccessTokenResponseDto.builder()
+                    .accessToken(keycloakResponse.getBody().getAccessToken()) // Récupération du token Keycloak
+                    .roleName(roleName)
+                    .build();
+    
+            return ResponseEntity.ok(responseDto);
+    
         } catch (Exception e) {
-            log.error("Login failed for user: {}", username, e);
-            throw new RuntimeException("Invalid login credentials or error during login", e);
+            log.error("Échec de connexion pour l'utilisateur : {}", username, e);
+            throw new RuntimeException("Identifiants invalides ou erreur de connexion", e);
         }
     }
 
