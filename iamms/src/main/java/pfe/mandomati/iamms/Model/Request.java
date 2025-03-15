@@ -17,8 +17,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import pfe.mandomati.iamms.Model.Enums.RequestType;
-import pfe.mandomati.iamms.Model.User;
-
 
 @Entity
 @Table(name = "requests")

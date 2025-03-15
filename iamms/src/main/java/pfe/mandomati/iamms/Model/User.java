@@ -2,7 +2,6 @@ package pfe.mandomati.iamms.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +15,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pfe.mandomati.iamms.Model.Role;
 
 @Entity
 @Table(name = "users")
