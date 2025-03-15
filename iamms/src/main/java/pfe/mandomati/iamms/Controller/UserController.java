@@ -3,7 +3,8 @@ package pfe.mandomati.iamms.Controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +36,16 @@ public class UserController {
     @GetMapping("/get/{id}")
     public User getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
+    }
+
+    @GetMapping("/{email}")
+    public ResponseEntity<String> checkUserExists(@PathVariable("email") String email) {
+        boolean exists = userService.checkUserExistsByEmail(email);
+        if (exists) {
+            return ResponseEntity.ok("User exists");
+        } else {
+            return ResponseEntity.status(404).body("User not found");
+        }
     }
 
     @GetMapping("/role/{roleName}")

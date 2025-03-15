@@ -119,4 +119,9 @@ public class UserServiceImp implements UserService {
         );
 
     }
+
+    @Override
+    public boolean checkUserExistsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
 }

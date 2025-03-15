@@ -17,5 +17,7 @@ public interface UserService {
 
     List<UsersMsDto> findAllByRoleName(String roleName);
     UsersMsDto findByRoleNameAndId(String roleName, Long id);
+
+    boolean checkUserExistsByEmail(String email);
     
 }
