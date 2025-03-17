@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public User editUser(String username, UserDto userDto) {
+    public ResponseEntity<String> editUser(String username, UserDto userDto) {
         // Rechercher l'utilisateur dans la base de données par nom d'utilisateur
         User existingUser = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
@@ -58,12 +59,14 @@ public class UserServiceImp implements UserService {
         existingUser.setLastName(userDto.getLastname());
         existingUser.setUsername(userDto.getUsername());
         existingUser.setEmail(userDto.getEmail());
-        return userRepository.save(existingUser);
+        userRepository.save(existingUser);
+
+        return ResponseEntity.ok("User updated successfully");
     }
 
     @Override
     @Transactional
-    public void deleteUser(String username) {
+    public ResponseEntity<String> deleteUser(String username) {
         // Rechercher l'utilisateur dans la base de données par nom d'utilisateur
         User existingUser = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
@@ -76,6 +79,8 @@ public class UserServiceImp implements UserService {
 
         // Supprimez l'utilisateur de la base de données
         userRepository.deleteById(existingUser.getId());
+
+        return ResponseEntity.ok("User deleted successfully");
     }
 
     @Override
@@ -117,7 +122,6 @@ public class UserServiceImp implements UserService {
             user.getBirthDate(),
             user.getCity()
         );
-
     }
 
     @Override
