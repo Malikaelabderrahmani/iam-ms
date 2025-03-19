@@ -84,48 +84,57 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public List<UsersMsDto> findAllByRoleName(String roleName) {
+    public ResponseEntity<List<UsersMsDto>> findAllByRoleName(String roleName) {
         List<User> users = userRepository.findAllByRoleName(roleName);
 
         if (users.isEmpty()) {
             throw new UserNotFoundException("Users not found with role: " + roleName);
         }
         
-        return users.stream()
+        List<UsersMsDto> usersMsDtos = users.stream()
                 .map(user -> new UsersMsDto(
                     user.getId(), 
                     user.getUsername(),
+                    user.getPassword(),
+                    user.getEmail(),
                     user.getFirstName(),
                     user.getLastName(),
-                    user.getEmail(),
-                    user.getRole().getName(),
-                    user.getAddress(),
+                    user.isStatus(),
                     user.getBirthDate(),
+                    user.getAddress(),
                     user.getCity(),
-                    user.getCreatedAt()
+                    user.getCreatedAt(),
+                    new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
                 ))
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(usersMsDtos);
     }
 
+
     @Override
-    public UsersMsDto findByRoleNameAndId(String roleName, Long id) {
+    public ResponseEntity<UsersMsDto> findByRoleNameAndId(String roleName, Long id) {
         User user = userRepository.findByRoleNameAndId(roleName, id);
 
         if (user == null) {
             throw new UserNotFoundException("User not found with ID: " + id);
         }
-        return new UsersMsDto(
+        UsersMsDto usersMsDto = new UsersMsDto(
             user.getId(),
             user.getUsername(),
+            user.getPassword(),
+            user.getEmail(),
             user.getFirstName(),
             user.getLastName(),
-            user.getEmail(),
-            user.getRole().getName(),
-            user.getAddress(),
+            user.isStatus(),
             user.getBirthDate(),
+            user.getAddress(),
             user.getCity(),
-            user.getCreatedAt()
+            user.getCreatedAt(),
+            new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
         );
+
+        return ResponseEntity.ok(usersMsDto);
     }
 
     @Override

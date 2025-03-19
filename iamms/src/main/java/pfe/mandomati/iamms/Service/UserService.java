@@ -16,8 +16,8 @@ public interface UserService {
     ResponseEntity<String> editUser(String username, UserDto userDto);
     ResponseEntity<String> deleteUser(String username);
 
-    List<UsersMsDto> findAllByRoleName(String roleName);
-    UsersMsDto findByRoleNameAndId(String roleName, Long id);
+    ResponseEntity<List<UsersMsDto>> findAllByRoleName(String roleName);
+    ResponseEntity<UsersMsDto> findByRoleNameAndId(String roleName, Long id);
 
     boolean checkUserExistsByEmail(String email);
     

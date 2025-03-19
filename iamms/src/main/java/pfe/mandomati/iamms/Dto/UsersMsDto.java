@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
@@ -15,22 +16,25 @@ import lombok.NoArgsConstructor;
 public class UsersMsDto {
 
     private Long id;
-
     private String username;
-
-    private String lastname;
-
-    private String firstname;
-
+    private String password;
     private String email;
-
-    private String roleName;
-
-    private String address;
-
+    private String firstname;
+    private String lastname;
+    private boolean status;
     private LocalDate birthDate;
-
+    private String address;
     private String city;
-
     private LocalDateTime createdAt;
+
+    private Role role;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @SuperBuilder
+    public static class Role {
+        private Long id;
+        private String name;
+    }
 }
