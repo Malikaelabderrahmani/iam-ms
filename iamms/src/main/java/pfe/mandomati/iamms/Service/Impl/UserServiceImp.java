@@ -94,13 +94,15 @@ public class UserServiceImp implements UserService {
         return users.stream()
                 .map(user -> new UsersMsDto(
                     user.getId(), 
+                    user.getUsername(),
                     user.getFirstName(),
                     user.getLastName(),
                     user.getEmail(),
                     user.getRole().getName(),
                     user.getAddress(),
                     user.getBirthDate(),
-                    user.getCity()
+                    user.getCity(),
+                    user.getCreatedAt()
                 ))
                 .collect(Collectors.toList());
     }
@@ -113,14 +115,16 @@ public class UserServiceImp implements UserService {
             throw new UserNotFoundException("User not found with ID: " + id);
         }
         return new UsersMsDto(
-            user.getId(), 
+            user.getId(),
+            user.getUsername(),
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),
             user.getRole().getName(),
             user.getAddress(),
             user.getBirthDate(),
-            user.getCity()
+            user.getCity(),
+            user.getCreatedAt()
         );
     }
 

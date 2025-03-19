@@ -1,6 +1,7 @@
 package pfe.mandomati.iamms.Dto;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,8 @@ public class UsersMsDto {
 
     private Long id;
 
+    private String username;
+
     private String lastname;
 
     private String firstname;
@@ -28,4 +31,6 @@ public class UsersMsDto {
     private LocalDate birthDate;
 
     private String city;
+
+    private LocalDateTime createdAt;
 }
