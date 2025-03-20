@@ -37,9 +37,29 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+    public ResponseEntity<UsersMsDto> getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+    
+        UsersMsDto userDto = new UsersMsDto(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.isStatus(),
+                user.getBirthDate(),
+                user.getAddress(),
+                user.getCity(),
+                user.getCreatedAt(),
+                new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
+        );
+    
+        return ResponseEntity.ok(userDto);
     }
+    
+    
 
     @Override
     @Transactional

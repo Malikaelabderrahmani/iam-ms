@@ -12,7 +12,7 @@ import pfe.mandomati.iamms.Dto.UsersMsDto;
 public interface UserService {
     
     List<User> getAllUsers();
-    User getUserById(Long id);
+    ResponseEntity<UsersMsDto> getUserById(Long id);
     ResponseEntity<String> editUser(String username, UserDto userDto);
     ResponseEntity<String> deleteUser(String username);
 
