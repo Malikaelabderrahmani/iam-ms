@@ -11,7 +11,7 @@ import pfe.mandomati.iamms.Dto.UsersMsDto;
 public interface UserService {
     
     List<User> getAllUsers();
-    UsersMsDto getUserById(Long id);
+    User getUserById(Long id);
     User editUser(String username, UserDto userDto);
     void deleteUser(String username);
 

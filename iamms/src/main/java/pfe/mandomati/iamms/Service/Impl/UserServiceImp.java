@@ -36,23 +36,9 @@ public class UserServiceImp implements UserService {
     }
 
     @Override
-    public UsersMsDto getUserById(Long id) {
-        // Rechercher l'utilisateur en base de données
-        User user = userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
-    
-        // Retourner les infos détaillées sous forme de DTO
-        return new UsersMsDto(
-            user.getId(),
-            user.getFirstName(),
-            user.getLastName(),
-            user.getEmail(),
-            user.getRole().getName(),
-            user.getAddress(),
-            user.getBirthDate(),
-            user.getCity()
-        );
-    }    
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
+    }
 
     @Override
     @Transactional
