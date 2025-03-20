@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class UserServiceImp implements UserService {
 
     @Override
     @Transactional
-    public User editUser(String username, UserDto userDto) {
+    public ResponseEntity<String> editUser(String username, UserDto userDto) {
         // Rechercher l'utilisateur dans la base de données par nom d'utilisateur
         User existingUser = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
@@ -58,12 +59,14 @@ public class UserServiceImp implements UserService {
         existingUser.setLastName(userDto.getLastname());
         existingUser.setUsername(userDto.getUsername());
         existingUser.setEmail(userDto.getEmail());
-        return userRepository.save(existingUser);
+        userRepository.save(existingUser);
+
+        return ResponseEntity.ok("User updated successfully !");
     }
 
     @Override
     @Transactional
-    public void deleteUser(String username) {
+    public ResponseEntity<String> deleteUser(String username) {
         // Rechercher l'utilisateur dans la base de données par nom d'utilisateur
         User existingUser = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found with username: " + username));
 
@@ -76,48 +79,62 @@ public class UserServiceImp implements UserService {
 
         // Supprimez l'utilisateur de la base de données
         userRepository.deleteById(existingUser.getId());
+
+        return ResponseEntity.ok("User deleted successfully !");
     }
 
     @Override
-    public List<UsersMsDto> findAllByRoleName(String roleName) {
+    public ResponseEntity<List<UsersMsDto>> findAllByRoleName(String roleName) {
         List<User> users = userRepository.findAllByRoleName(roleName);
 
         if (users.isEmpty()) {
             throw new UserNotFoundException("Users not found with role: " + roleName);
         }
         
-        return users.stream()
+        List<UsersMsDto> usersMsDtos = users.stream()
                 .map(user -> new UsersMsDto(
                     user.getId(), 
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getEmail(),
                     user.getFirstName(),
                     user.getLastName(),
-                    user.getEmail(),
-                    user.getRole().getName(),
-                    user.getAddress(),
+                    user.isStatus(),
                     user.getBirthDate(),
-                    user.getCity()
+                    user.getAddress(),
+                    user.getCity(),
+                    user.getCreatedAt(),
+                    new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
                 ))
                 .collect(Collectors.toList());
+
+        return ResponseEntity.ok(usersMsDtos);
     }
 
+
     @Override
-    public UsersMsDto findByRoleNameAndId(String roleName, Long id) {
+    public ResponseEntity<UsersMsDto> findByRoleNameAndId(String roleName, Long id) {
         User user = userRepository.findByRoleNameAndId(roleName, id);
 
         if (user == null) {
             throw new UserNotFoundException("User not found with ID: " + id);
         }
-        return new UsersMsDto(
-            user.getId(), 
+        UsersMsDto usersMsDto = new UsersMsDto(
+            user.getId(),
+            user.getUsername(),
+            user.getPassword(),
+            user.getEmail(),
             user.getFirstName(),
             user.getLastName(),
-            user.getEmail(),
-            user.getRole().getName(),
-            user.getAddress(),
+            user.isStatus(),
             user.getBirthDate(),
-            user.getCity()
+            user.getAddress(),
+            user.getCity(),
+            user.getCreatedAt(),
+            new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
         );
 
+        return ResponseEntity.ok(usersMsDto);
     }
 
     @Override

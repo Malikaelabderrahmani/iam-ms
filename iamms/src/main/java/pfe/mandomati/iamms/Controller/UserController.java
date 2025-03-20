@@ -18,13 +18,12 @@ import lombok.RequiredArgsConstructor;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Service.UserService;
 
-
 @RestController
 @RequiredArgsConstructor
 //@PreAuthorize("hasAnyRole('ADMIN', 'ROOT', 'RH')")
 @RequestMapping("auth/user")
 public class UserController {
-    
+
     @Autowired
     private final UserService userService;
 
@@ -49,58 +48,46 @@ public class UserController {
     }
 
     @GetMapping("/role/{roleName}")
-    public List<UsersMsDto> findAllByRoleName(@PathVariable String roleName) {
+    public ResponseEntity<List<UsersMsDto>> findAllByRoleName(@PathVariable String roleName) {
         if (roleName.equals("admin")) {
             return userService.findAllByRoleName("ADMIN");
-        }
-        else if (roleName.equals("teacher")) {
+        } else if (roleName.equals("teacher")) {
             return userService.findAllByRoleName("TEACHER");
-        }
-        else if (roleName.equals("rh")) {
+        } else if (roleName.equals("rh")) {
             return userService.findAllByRoleName("RH");
-        }
-        else if (roleName.equals("student")) {
+        } else if (roleName.equals("student")) {
             return userService.findAllByRoleName("STUDENT");
-        }
-        else if (roleName.equals("parent")){
+        } else if (roleName.equals("parent")) {
             return userService.findAllByRoleName("PARENT");
-        }
-        else {
+        } else {
             throw new RuntimeException("Role not found");
         }
     }
 
     @GetMapping("/role/{roleName}/{id}")
-    public UsersMsDto findByRoleNameAndId(@PathVariable  String roleName, @PathVariable Long id) {
+    public ResponseEntity<UsersMsDto> findByRoleNameAndId(@PathVariable String roleName, @PathVariable Long id) {
         if (roleName.equals("admin")) {
             return userService.findByRoleNameAndId("ADMIN", id);
-        }
-        else if (roleName.equals("teacher")) {
+        } else if (roleName.equals("teacher")) {
             return userService.findByRoleNameAndId("TEACHER", id);
-        }
-        else if (roleName.equals("rh")) {
+        } else if (roleName.equals("rh")) {
             return userService.findByRoleNameAndId("RH", id);
-        }
-        else if (roleName.equals("student")) {
+        } else if (roleName.equals("student")) {
             return userService.findByRoleNameAndId("STUDENT", id);
-        
-        }
-        else if (roleName.equals("parent")){
+        } else if (roleName.equals("parent")) {
             return userService.findByRoleNameAndId("PARENT", id);
-        }
-        else {
+        } else {
             throw new RuntimeException("Role not found");
         }
     }
-    
 
     @PutMapping("/edit/{username}")
-    public User editUser(@PathVariable String username, @RequestBody UserDto userDto) {
+    public ResponseEntity<String> editUser(@PathVariable String username, @RequestBody UserDto userDto) {
         return userService.editUser(username, userDto);
     }
 
     @DeleteMapping("/delete/{username}")
-    public void deleteUser(@PathVariable String username) {
-        userService.deleteUser(username);
+    public ResponseEntity<String> deleteUser(@PathVariable String username) {
+        return userService.deleteUser(username);
     }
 }

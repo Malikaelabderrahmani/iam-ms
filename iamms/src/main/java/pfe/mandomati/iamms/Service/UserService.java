@@ -2,6 +2,7 @@ package pfe.mandomati.iamms.Service;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pfe.mandomati.iamms.Model.User;
 import pfe.mandomati.iamms.Dto.UserDto;
@@ -12,11 +13,11 @@ public interface UserService {
     
     List<User> getAllUsers();
     User getUserById(Long id);
-    User editUser(String username, UserDto userDto);
-    void deleteUser(String username);
+    ResponseEntity<String> editUser(String username, UserDto userDto);
+    ResponseEntity<String> deleteUser(String username);
 
-    List<UsersMsDto> findAllByRoleName(String roleName);
-    UsersMsDto findByRoleNameAndId(String roleName, Long id);
+    ResponseEntity<List<UsersMsDto>> findAllByRoleName(String roleName);
+    ResponseEntity<UsersMsDto> findByRoleNameAndId(String roleName, Long id);
 
     boolean checkUserExistsByEmail(String email);
     
