@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/role/{roleName}")
-    public List<UsersMsDto> findAllByRoleName(@PathVariable String roleName) {
+    public ResponseEntity<List<UsersMsDto>> findAllByRoleName(@PathVariable String roleName) {
         if (roleName.equals("admin")) {
             return userService.findAllByRoleName("ADMIN");
         } else if (roleName.equals("teacher")) {
@@ -65,7 +65,7 @@ public class UserController {
     }
 
     @GetMapping("/role/{roleName}/{id}")
-    public UsersMsDto findByRoleNameAndId(@PathVariable String roleName, @PathVariable Long id) {
+    public ResponseEntity<UsersMsDto> findByRoleNameAndId(@PathVariable String roleName, @PathVariable Long id) {
         if (roleName.equals("admin")) {
             return userService.findByRoleNameAndId("ADMIN", id);
         } else if (roleName.equals("teacher")) {
