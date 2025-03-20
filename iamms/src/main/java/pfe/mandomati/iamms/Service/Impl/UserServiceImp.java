@@ -61,7 +61,7 @@ public class UserServiceImp implements UserService {
         existingUser.setEmail(userDto.getEmail());
         userRepository.save(existingUser);
 
-        return ResponseEntity.ok("User updated successfully");
+        return ResponseEntity.ok("User updated successfully !");
     }
 
     @Override
@@ -80,7 +80,7 @@ public class UserServiceImp implements UserService {
         // Supprimez l'utilisateur de la base de données
         userRepository.deleteById(existingUser.getId());
 
-        return ResponseEntity.ok("User deleted successfully");
+        return ResponseEntity.ok("User deleted successfully !");
     }
 
     @Override
