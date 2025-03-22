@@ -91,7 +91,7 @@ public class UserController {
         return userService.deleteUser(username);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("profile/{username}")
     public ResponseEntity<UsersMsDto> getUserByUsername(@PathVariable String username) {
         return userService.getUserByUsername(username);
     }
