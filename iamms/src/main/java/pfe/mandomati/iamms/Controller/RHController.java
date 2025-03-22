@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.iamms.Dto.RHDto;
@@ -20,5 +23,15 @@ public class RHController {
     @PostMapping("/register")
     public ResponseEntity<String> registerRH(@RequestBody RHDto rhDto) {
         return rhService.register(rhDto);
+    }
+
+    @DeleteMapping("/delete/{rhId}/{username}")
+    public ResponseEntity<String> deleteRH(@PathVariable Long rhId, @PathVariable String username) {
+        return rhService.delete(rhId, username);
+    }
+
+    @PutMapping("/update/{rhId}/{username}")
+    public ResponseEntity<String> updateRH(@PathVariable Long rhId, @PathVariable String username, @RequestBody RHDto rhDto) {
+        return rhService.update(rhId, username, rhDto);
     }
 }

@@ -5,12 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpEntity;
 
 import jakarta.transaction.Transactional;
 import pfe.mandomati.iamms.Dto.RHDto;
@@ -29,7 +31,6 @@ public class RHServiceImpl implements RHService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('RH')")
     public ResponseEntity<String> register(RHDto rhDto) {
         boolean exists = rhRepository.existsByUserIdOrCniOrCnssNumber(rhDto.getId() ,rhDto.getCni(), rhDto.getCnssNumber());
         if (exists) {
@@ -50,7 +51,7 @@ public class RHServiceImpl implements RHService {
                 .role(rhDto.getRole())
                 .build();
 
-            // 🔹 Envoyer UserDto à IAM-MS (AuthController)
+            //  Envoyer UserDto à IAM-MS (AuthController)
             ResponseEntity<String> response = restTemplate.postForEntity(
                 "https://iamms.mandomati.com/api/auth/register", userDto, String.class
             );
@@ -59,10 +60,10 @@ public class RHServiceImpl implements RHService {
                 return ResponseEntity.status(response.getStatusCode()).body("Failed to register user in IAM-MS");
             }
 
-            // 🔹 Extraire l'ID utilisateur depuis la réponse
+            //  Extraire l'ID utilisateur depuis la réponse
             Long userId = extractIdFromResponse(response.getBody());
 
-            // 🔹 Enregistrer les infos spécifiques RH
+            //  Enregistrer les infos spécifiques RH
             saveRhLocally(rhDto, userId);
             
             return ResponseEntity.ok("RH registered successfully");
@@ -92,4 +93,92 @@ public class RHServiceImpl implements RHService {
         rh.setPosition(rhDto.getPosition());
         rhRepository.save(rh);
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<String> delete(Long rhId, String username) {
+        try {
+            // 1️ Supprimer l'utilisateur de IAM-MS
+            String deleteUrl = "https://iamms.mandomati.com/api/auth/user/delete/" + username;
+            ResponseEntity<String> deleteResponse = restTemplate.exchange(
+                deleteUrl, HttpMethod.DELETE, null, String.class
+            );
+
+            if (!deleteResponse.getStatusCode().is2xxSuccessful()) {
+                return ResponseEntity.status(deleteResponse.getStatusCode())
+                        .body("Failed to delete user from IAM-MS");
+            }
+
+            log.info("User {} deleted successfully from IAM-MS", username);
+
+            // 2️ Supprimer le RH de la base locale
+            rhRepository.deleteById(rhId);
+            log.info("RH with ID {} deleted from local database", rhId);
+
+            return ResponseEntity.ok("RH deleted successfully from IAM-MS and local database");
+
+        } catch (Exception e) {
+            log.error("Error occurred while deleting RH", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error occurred while processing request");
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<String> update(Long rhId, String username, RHDto rhDto) {
+        // Vérifier si le RH existe en base locale
+        Optional<RH> optionalRH = rhRepository.findById(rhId);
+        if (optionalRH.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RH not found");
+        }
+
+        RH rh = optionalRH.get();
+
+        try {
+            // 1️ Construire le UserDto pour IAM-MS
+            UserDto userDto = UserDto.builder()
+                .username(username)
+                .lastname(rhDto.getLastname())
+                .firstname(rhDto.getFirstname())
+                .email(rhDto.getEmail())
+                .address(rhDto.getAddress())
+                .birthDate(rhDto.getBirthDate())
+                .city(rhDto.getCity())
+                .role(rhDto.getRole())  // Associer le rôle s'il est fourni
+                .build();
+
+        // 2️ Mettre à jour IAM-MS
+        String editUrl = "https://iamms.mandomati.com/api/auth/user/edit/" + username;
+        ResponseEntity<String> editResponse = restTemplate.exchange(
+                editUrl, HttpMethod.PUT, new HttpEntity<>(userDto), String.class
+        );
+
+        if (!editResponse.getStatusCode().is2xxSuccessful()) {
+            return ResponseEntity.status(editResponse.getStatusCode())
+                    .body("Failed to update RH in IAM-MS");
+        }
+
+        log.info("RH {} updated successfully in IAM-MS", username);
+
+        // 3️⃣ Mettre à jour la base locale (uniquement les champs spécifiques)
+        rh.setCni(rhDto.getCni());
+        rh.setHireDate(rhDto.getHireDate());
+        rh.setCnssNumber(rhDto.getCnssNumber());
+        rh.setPosition(rhDto.getPosition());
+
+        rhRepository.save(rh);
+        log.info("RH with ID {} updated locally", rhId);
+
+        return ResponseEntity.ok("RH updated successfully in IAM-MS and local database");
+
+        } catch (Exception e) {
+            log.error("Error occurred while updating RH", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error while processing request");
+        }
+    }
+
+
+
 }
