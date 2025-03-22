@@ -58,9 +58,31 @@ public class UserServiceImp implements UserService {
     
         return ResponseEntity.ok(userDto);
     }
-    
-    
 
+
+    @Override
+    public ResponseEntity<UsersMsDto> getUserByUsername(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found with Username: " + username));
+    
+        UsersMsDto userDto = new UsersMsDto(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.isStatus(),
+                user.getBirthDate(),
+                user.getAddress(),
+                user.getCity(),
+                user.getCreatedAt(),
+                new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
+        );
+    
+        return ResponseEntity.ok(userDto);
+    }
+    
     @Override
     @Transactional
     public ResponseEntity<String> editUser(String username, UserDto userDto) {

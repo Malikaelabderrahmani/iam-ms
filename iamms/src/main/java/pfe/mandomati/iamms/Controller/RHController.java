@@ -40,4 +40,10 @@ public class RHController {
     public ResponseEntity<?> getAllRH() {
         return rhService.getAllRH();
     }
+
+    @GetMapping("profile/{username}")
+    public ResponseEntity<?> getRHByUsername(@PathVariable String username) {
+        return rhService.getRHByUsername(username);
+    }
+
 }

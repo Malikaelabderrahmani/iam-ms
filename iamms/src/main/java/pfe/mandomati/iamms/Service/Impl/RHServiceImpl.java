@@ -227,12 +227,59 @@ public class RHServiceImpl implements RHService {
 
         return ResponseEntity.ok(rhDtos);
 
-    } catch (Exception e) {
-        log.error("Error occurred while retrieving RH list", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        } catch (Exception e) {
+            log.error("Error occurred while retrieving RH list", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error while processing request");
+        }
     }
-}
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> getRHByUsername(String username) {
+        try {
+            // 1️ Récupérer les infos de l'utilisateur depuis IAM-MS
+            String iamMsUrl = "https://iamms.mandomati.com/api/auth/user/get" + username;
+            ResponseEntity<UserDto> iamResponse = restTemplate.getForEntity(iamMsUrl, UserDto.class);
+
+            if (!iamResponse.getStatusCode().is2xxSuccessful() || iamResponse.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RH not found in IAM-MS");
+            }
+
+            UserDto iamRH = iamResponse.getBody();
+            Long userId = iamRH.getId(); // Récupérer l'ID de l'utilisateur
+
+            // 2️ Récupérer les infos du RH dans la base locale en utilisant l'ID
+            Optional<RH> localRHOptional = rhRepository.findById(userId);
+
+            // 3️ Fusionner les données
+            RHDto rhDto = RHDto.builder()
+                .id(userId) // Utiliser l'ID récupéré de IAM-MS
+                .username(iamRH.getUsername())
+                .lastname(iamRH.getLastname())
+                .firstname(iamRH.getFirstname())
+                .email(iamRH.getEmail())
+                .address(iamRH.getAddress())
+                .birthDate(iamRH.getBirthDate())
+                .city(iamRH.getCity())
+                .cni(localRHOptional.map(RH::getCni).orElse(null))
+                .hireDate(localRHOptional.map(RH::getHireDate).orElse(null))
+                .cnssNumber(localRHOptional.map(RH::getCnssNumber).orElse(null))
+                .position(localRHOptional.map(RH::getPosition).orElse(null))
+                .build();
+
+            return ResponseEntity.ok(rhDto);
+
+        } catch (Exception e) {
+            log.error("Error occurred while retrieving RH by username: {}", username, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error while processing request");
+        }
+    }
+
+
+
+
 
 
 

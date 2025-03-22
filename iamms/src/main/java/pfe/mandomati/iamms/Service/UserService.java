@@ -13,6 +13,7 @@ public interface UserService {
     
     List<User> getAllUsers();
     ResponseEntity<UsersMsDto> getUserById(Long id);
+    ResponseEntity<UsersMsDto> getUserByUsername(String username);
     ResponseEntity<String> editUser(String username, UserDto userDto);
     ResponseEntity<String> deleteUser(String username);
 

@@ -90,4 +90,9 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable String username) {
         return userService.deleteUser(username);
     }
+
+    @GetMapping("/get/{username}")
+    public ResponseEntity<UsersMsDto> getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username);
+    }
 }
