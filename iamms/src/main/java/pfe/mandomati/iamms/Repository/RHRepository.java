@@ -6,5 +6,5 @@ import pfe.mandomati.iamms.Model.RH;
 
 public interface RHRepository extends JpaRepository<RH, Long> {
 
-    boolean existsByUserIdOrCniOrCnssNumber(Long userId, String cni, String cnssNumber);
+    boolean existsByUserIdOrCniOrCnssNumber(Long id, String cni, String cnssNumber);
 }
