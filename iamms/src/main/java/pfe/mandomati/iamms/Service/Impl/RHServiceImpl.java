@@ -277,6 +277,55 @@ public class RHServiceImpl implements RHService {
         }
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> getRHById(Long id) {
+        try {
+            // 1️ Récupérer les infos de l'utilisateur depuis IAM-MS avec ID
+            String iamMsUrl = "https://iamms.mandomati.com/api/auth/user/get/" + id;
+            ResponseEntity<UserDto> iamResponse = restTemplate.getForEntity(iamMsUrl, UserDto.class);
+
+            if (!iamResponse.getStatusCode().is2xxSuccessful() || iamResponse.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RH not found in IAM-MS");
+            }
+
+            UserDto iamRH = iamResponse.getBody();
+
+            // 2️ Récupérer les infos du RH dans la base locale
+            Optional<RH> localRHOptional = rhRepository.findById(id);
+
+            if (localRHOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("RH not found in local database");
+            }
+
+            RH localRH = localRHOptional.get();
+
+            // 3️ Fusionner les données IAM-MS et locales
+            RHDto rhDto = RHDto.builder()
+                .id(iamRH.getId())  // ID récupéré de IAM-MS
+                .username(iamRH.getUsername())
+                .lastname(iamRH.getLastname())
+                .firstname(iamRH.getFirstname())
+                .email(iamRH.getEmail())
+                .address(iamRH.getAddress())
+                .birthDate(iamRH.getBirthDate())
+                .city(iamRH.getCity())
+                .cni(localRH.getCni())
+                .hireDate(localRH.getHireDate())
+                .cnssNumber(localRH.getCnssNumber())
+                .position(localRH.getPosition())
+                .build();
+
+            return ResponseEntity.ok(rhDto);
+
+        } catch (Exception e) {
+            log.error("Error occurred while retrieving RH by ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error while processing request");
+        }
+}
+
+
 
 
 

@@ -46,4 +46,9 @@ public class RHController {
         return rhService.getRHByUsername(username);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getRHById(@PathVariable Long id) {
+        return rhService.getRHById(id);
+    }
+
 }

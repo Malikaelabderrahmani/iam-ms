@@ -11,5 +11,6 @@ public interface RHService {
     ResponseEntity<String> delete(Long rhId, String username);
     ResponseEntity<?> getAllRH();
     ResponseEntity<?> getRHByUsername(String username);
+    ResponseEntity<?> getRHById(Long id);
 
 }
