@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RH {
-    
+
     @Id
     @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId;
+    private Long id;
 
     @Column(name = "cni", length = 50, unique = true)
     private String cni;

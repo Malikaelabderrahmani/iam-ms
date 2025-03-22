@@ -11,6 +11,8 @@ import pfe.mandomati.iamms.Model.Role;
 @Builder
 public class UserDto {
 
+    private Long id;
+
     private String username;
 
     private String lastname;

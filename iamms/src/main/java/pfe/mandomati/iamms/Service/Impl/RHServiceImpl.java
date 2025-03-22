@@ -4,11 +4,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.Optional;
+import java.util.List;
+import java.util.Arrays;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpMethod;
@@ -86,7 +91,7 @@ public class RHServiceImpl implements RHService {
 
     private void saveRhLocally(RHDto rhDto, Long userId) {
         RH rh = new RH();
-        rh.setUserId(userId);
+        rh.setId(userId);
         rh.setCni(rhDto.getCni());
         rh.setHireDate(rhDto.getHireDate());
         rh.setCnssNumber(rhDto.getCnssNumber());
@@ -178,6 +183,58 @@ public class RHServiceImpl implements RHService {
                 .body("Error while processing request");
         }
     }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> getAllRH() {
+        try {
+            // 1️ Récupérer les RH depuis IAM-MS
+            String iamMsUrl = "https://iamms.mandomati.com/api/auth/user/role/rh";
+            ResponseEntity<UserDto[]> iamResponse = restTemplate.getForEntity(iamMsUrl, UserDto[].class);
+
+            if (!iamResponse.getStatusCode().is2xxSuccessful() || iamResponse.getBody() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Failed to retrieve RH from IAM-MS");
+            }
+
+            List<UserDto> iamRHList = Arrays.asList(iamResponse.getBody());
+
+            // 2️ Récupérer les RH depuis la base locale
+            List<RH> localRHList = rhRepository.findAll();
+
+            // 3️ Mapper et fusionner les données IAM-MS et locales
+            List<RHDto> rhDtos = iamRHList.stream().map(userDto -> {
+                Optional<RH> rhOptional = localRHList.stream()
+                    .filter(rh -> rh.getId().equals(userDto.getId()))
+                    .findFirst();
+
+            return RHDto.builder()
+                    .id(rhOptional.map(RH::getId).orElse(null))
+                    .username(userDto.getUsername())
+                    .lastname(userDto.getLastname())
+                    .firstname(userDto.getFirstname())
+                    .email(userDto.getEmail())
+                    // .role(userDto.getRole())
+                    .address(userDto.getAddress())
+                    .birthDate(userDto.getBirthDate())
+                    .city(userDto.getCity())
+                    // .createdAt(userDto.getCreatedAt())
+                    .cni(rhOptional.map(RH::getCni).orElse(null))
+                    .hireDate(rhOptional.map(RH::getHireDate).orElse(null))
+                    .cnssNumber(rhOptional.map(RH::getCnssNumber).orElse(null))
+                    .position(rhOptional.map(RH::getPosition).orElse(null))
+                    .build();
+            }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(rhDtos);
+
+    } catch (Exception e) {
+        log.error("Error occurred while retrieving RH list", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error while processing request");
+    }
+}
+
+
 
 
 

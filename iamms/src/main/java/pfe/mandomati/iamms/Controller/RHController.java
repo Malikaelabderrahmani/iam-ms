@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import lombok.RequiredArgsConstructor;
 import pfe.mandomati.iamms.Dto.RHDto;
@@ -33,5 +34,10 @@ public class RHController {
     @PutMapping("/update/{rhId}/{username}")
     public ResponseEntity<String> updateRH(@PathVariable Long rhId, @PathVariable String username, @RequestBody RHDto rhDto) {
         return rhService.update(rhId, username, rhDto);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllRH() {
+        return rhService.getAllRH();
     }
 }
