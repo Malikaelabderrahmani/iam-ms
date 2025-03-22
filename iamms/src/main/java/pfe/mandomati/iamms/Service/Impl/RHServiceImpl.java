@@ -37,7 +37,7 @@ public class RHServiceImpl implements RHService {
     @Override
     @Transactional
     public ResponseEntity<String> register(RHDto rhDto) {
-        boolean exists = rhRepository.existsByUserIdOrCniOrCnssNumber(rhDto.getId() ,rhDto.getCni(), rhDto.getCnssNumber());
+        boolean exists = rhRepository.existsByIdOrCniOrCnssNumber(rhDto.getId() ,rhDto.getCni(), rhDto.getCnssNumber());
         if (exists) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("RH already exists");
         }
