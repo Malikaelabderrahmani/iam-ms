@@ -24,7 +24,7 @@ import pfe.mandomati.iamms.Service.RHService;
 @Slf4j
 public class RHServiceImpl implements RHService {
 
-    private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate = new RestTemplate();
     private final RHRepository rhRepository;
 
     @Override
