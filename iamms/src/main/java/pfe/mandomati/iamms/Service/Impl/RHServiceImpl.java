@@ -239,7 +239,7 @@ public class RHServiceImpl implements RHService {
     public ResponseEntity<?> getRHByUsername(String username) {
         try {
             // 1️ Récupérer les infos de l'utilisateur depuis IAM-MS
-            String iamMsUrl = "https://iamms.mandomati.com/api/auth/user/get" + username;
+            String iamMsUrl = "https://iamms.mandomati.com/api/auth/user/profile" + username;
             ResponseEntity<UserDto> iamResponse = restTemplate.getForEntity(iamMsUrl, UserDto.class);
 
             if (!iamResponse.getStatusCode().is2xxSuccessful() || iamResponse.getBody() == null) {
