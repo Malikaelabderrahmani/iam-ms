@@ -10,7 +10,8 @@ public interface RHService {
     ResponseEntity<String> update(Long rhId, String username, RHDto rhDto);
     ResponseEntity<String> delete(Long rhId, String username);
     ResponseEntity<?> getAllRH();
-    ResponseEntity<?> getRHByUsername(String username);
+    ResponseEntity<?> getRHByToken(String token);
     ResponseEntity<?> getRHById(Long id);
+    // ResponseEntity<?> getRHFromToken(String token);
 
 }

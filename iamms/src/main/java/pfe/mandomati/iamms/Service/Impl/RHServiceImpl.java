@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.Optional;
 import java.util.List;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 
 
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpMethod;
+import org.json.JSONObject;
 import org.springframework.http.HttpEntity;
 
 import jakarta.transaction.Transactional;
@@ -236,8 +239,9 @@ public class RHServiceImpl implements RHService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> getRHByUsername(String username) {
+    public ResponseEntity<?> getRHByToken(String token) {
         try {
+            String username = extractUsernameFromToken(token);
             // 1️ Récupérer les infos de l'utilisateur depuis IAM-MS
             String iamMsUrl = "https://iamms.mandomati.com/api/auth/user/profile/" + username;
             ResponseEntity<UserDto> iamResponse = restTemplate.getForEntity(iamMsUrl, UserDto.class);
@@ -271,7 +275,7 @@ public class RHServiceImpl implements RHService {
             return ResponseEntity.ok(rhDto);
 
         } catch (Exception e) {
-            log.error("Error occurred while retrieving RH by username: {}", username, e);
+            log.error("Error occurred while retrieving RH by token: {}", token, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error while processing request");
         }
@@ -323,7 +327,58 @@ public class RHServiceImpl implements RHService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error while processing request");
         }
-}
+    }
+
+    public String extractUsernameFromToken(String token) {
+        try {
+            // Séparer le token en 3 parties : Header, Payload, Signature
+            String payload = token.split("\\.")[1];
+
+            // Décoder le payload en base64
+            String decodedPayload = new String(Base64.getUrlDecoder().decode(payload), StandardCharsets.UTF_8);
+
+            // Extraire l'username du payload (en supposant que l'username soit sous la clé "preferred_username")
+            JSONObject json = new JSONObject(decodedPayload);
+            return json.getString("preferred_username");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid token format or unable to extract username", e);
+        }
+    }
+
+    // @Override
+    // public ResponseEntity<?> getRHFromToken(String token) {
+    //     try {
+    //         // Extraire le username depuis le token JWT
+    //         String username = extractUsernameFromToken(token);
+    
+    //         // Récupérer l'ID de l'utilisateur depuis IAM-MS
+    //         String url = "https://iamms.mandomati.com/api/auth/rh/profile/" + username;
+    //         ResponseEntity<TeacherD> response = restTemplate.exchange(url, HttpMethod.GET, null, TeacherD.class);
+    
+    //         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+    //             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Teacher not found in IAM-MS");
+    //         }
+    
+    //         TeacherD iamUserResponse = response.getBody();
+    //         Long teacherId = iamUserResponse.getId(); // Suppose que IAM-MS vous renvoie un champ "id" pour l'enseignant
+    
+    //         // Récupérer l'enseignant par son ID depuis la base de données locale
+    //         Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
+    
+    //         if (optionalTeacher.isEmpty()) {
+    //             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Teacher not found in local database");
+    //         }
+    
+    //         Teacher teacher = optionalTeacher.get();
+    
+    //         // Fusionner les données locales et IAM-MS si nécessaire
+    //         return ResponseEntity.ok(mapToDto(teacher, iamUserResponse));
+    
+    //     } catch (Exception e) {
+    //         log.error("Error occurred while fetching teacher from token", e);
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while processing request");
+    //     }
+    // }
 
 
 

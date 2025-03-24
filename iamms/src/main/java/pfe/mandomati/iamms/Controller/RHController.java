@@ -1,8 +1,10 @@
 package pfe.mandomati.iamms.Controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,9 +43,13 @@ public class RHController {
         return rhService.getAllRH();
     }
 
-    @GetMapping("profile/{username}")
-    public ResponseEntity<?> getRHByUsername(@PathVariable String username) {
-        return rhService.getRHByUsername(username);
+    @GetMapping("/profile")
+    public ResponseEntity<?> getRHFromToken(@RequestHeader("Authorization") String authorizationHeader) {
+            // Extraire le token "Bearer <token>" et récupérer le token
+            String token = authorizationHeader.replace("Bearer ", "");
+
+            // Appeler le service avec le token extrait
+            return rhService.getRHByToken(token);
     }
 
     @GetMapping("/{id}")
