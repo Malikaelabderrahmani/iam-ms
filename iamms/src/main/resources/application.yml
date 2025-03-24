@@ -35,7 +35,7 @@ keycloak:
     secret: z72lJGSglXZ57Z6T3Gi8vcPLOE5OSEea
   principal-attribute: preferred_username
 
-client-jwk-set-uri: "https://elaoumrani:8444/realms/SchoolManagement/protocol/openid-connect/certs"
+client-jwk-set-uri: "https://elaoumrani.com:8444/realms/SchoolManagement/protocol/openid-connect/certs"
 jwt:
   auth:
     converter:
