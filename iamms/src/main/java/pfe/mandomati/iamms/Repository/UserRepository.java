@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
-    List<User> findByFirstnameAndLastname(String firstname, String lastname);
+    List<User> findByFirstNameAndLastName(String firstname, String lastname);
 
     List<User> findAllByRoleName(String roleName);
     User findByRoleNameAndId(String roleName, Long id);
