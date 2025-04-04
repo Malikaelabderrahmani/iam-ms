@@ -148,7 +148,7 @@ public class UserServiceImp implements UserService {
     }
 
     public ResponseEntity<List<UsersMsDto>> getUsersByFirstnameAndLastname(String firstname, String lastname) {
-        List<User> users = userRepository.findByFirstnameAndLastname(firstname, lastname);
+        List<User> users = userRepository.findByFirstNameAndLastName(firstname, lastname);
         if (users.isEmpty()) {
             return ResponseEntity.status(404).body(Collections.emptyList());
         }
