@@ -1,5 +1,6 @@
 package pfe.mandomati.iamms.Service.Impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,23 +41,7 @@ public class UserServiceImp implements UserService {
     public ResponseEntity<UsersMsDto> getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
-    
-        UsersMsDto userDto = new UsersMsDto(
-                user.getId(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.isStatus(),
-                user.getBirthDate(),
-                user.getAddress(),
-                user.getCity(),
-                user.getCreatedAt(),
-                new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
-        );
-    
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(convertToDto(user));
     }
 
 
@@ -65,22 +50,7 @@ public class UserServiceImp implements UserService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found with Username: " + username));
     
-        UsersMsDto userDto = new UsersMsDto(
-                user.getId(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getEmail(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.isStatus(),
-                user.getBirthDate(),
-                user.getAddress(),
-                user.getCity(),
-                user.getCreatedAt(),
-                new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
-        );
-    
-        return ResponseEntity.ok(userDto);
+        return ResponseEntity.ok(convertToDto(user));
     }
     
     @Override
@@ -161,7 +131,36 @@ public class UserServiceImp implements UserService {
         if (user == null) {
             throw new UserNotFoundException("User not found with ID: " + id);
         }
-        UsersMsDto usersMsDto = new UsersMsDto(
+
+        return ResponseEntity.ok(convertToDto(user));
+    }
+
+    @Override
+    public boolean checkUserExistsByEmail(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
+    public ResponseEntity<UsersMsDto> getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+        UsersMsDto userDto = convertToDto(user);
+        return ResponseEntity.ok(userDto);
+    }
+
+    public ResponseEntity<List<UsersMsDto>> getUsersByFirstnameAndLastname(String firstname, String lastname) {
+        List<User> users = userRepository.findByFirstnameAndLastname(firstname, lastname);
+        if (users.isEmpty()) {
+            return ResponseEntity.status(404).body(Collections.emptyList());
+        }
+        List<UsersMsDto> userDtos = users.stream()
+                .map(this::convertToDto)
+                .toList();
+        return ResponseEntity.ok(userDtos);
+    }
+
+    private UsersMsDto convertToDto(User user) {
+        // Implémentez la conversion de User à UsersMsDto
+        return new UsersMsDto(
             user.getId(),
             user.getUsername(),
             user.getPassword(),
@@ -175,12 +174,5 @@ public class UserServiceImp implements UserService {
             user.getCreatedAt(),
             new UsersMsDto.Role(user.getRole().getId(), user.getRole().getName())
         );
-
-        return ResponseEntity.ok(usersMsDto);
-    }
-
-    @Override
-    public boolean checkUserExistsByEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
     }
 }

@@ -21,5 +21,8 @@ public interface UserService {
     ResponseEntity<UsersMsDto> findByRoleNameAndId(String roleName, Long id);
 
     boolean checkUserExistsByEmail(String email);
+
+    ResponseEntity<UsersMsDto> getUserByEmail(String email);
+    ResponseEntity<List<UsersMsDto>> getUsersByFirstnameAndLastname(String firstname, String lastname);
     
 }
